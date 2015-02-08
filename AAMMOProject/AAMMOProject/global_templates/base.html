@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+	<head lang = "en">
+
+		<meta charset = "UTF-8">
+		<title>
+			{% block title %}
+				Default Title
+			{%  endblock %}
+		</title>
+
+	</head>
+
+	<body>
+
+		{% block header %}
+
+			<header>
+				Default HEADER goes here
+			</header>
+
+		{% endblock %}
+
+		{% block body %}
+
+			Default CONTENT goes here
+
+		{% endblock %}
+
+		<footer>
+			STATIC FOOTER
+		</footer>
+
+	</body>
+
+</html>
