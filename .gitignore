@@ -1,2 +1,6 @@
 AAMMOProject/.idea/*
-AAMMOProject/AAMMOProject/settings.py
+settings.py
+settings.py~
+settings.pyc
+*.pyc
+*.sqlite3
