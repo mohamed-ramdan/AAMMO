@@ -2,3 +2,4 @@ AAMMOProject/.idea/*
 settings.py
 settings.pyc
 *.pyc
+*.sqlite3
