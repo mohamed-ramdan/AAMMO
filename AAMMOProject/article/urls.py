@@ -5,8 +5,6 @@ urlpatterns = [
     # Examples:
     # url(r'^$', 'AAMMOProject.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-
-<<<<<<< HEAD
      url(r'^createarticle/$','article.views.createarticle'),
 
      url(r'^home_article/$','article.views.home_article'),
@@ -23,8 +21,4 @@ urlpatterns = [
 
      url(r'^open_article/(?P<article_id>\d+)/$','article.views.open_article')
 
-=======
-     # url(r'^createarticle/$','article.views.createarticle')
->>>>>>> a4a6ec07519306b7481665ab6c9224a113e055df
-    #url(r'^details/(?P<question_id>\d+)/$','mytest.views.details'),
 ]
