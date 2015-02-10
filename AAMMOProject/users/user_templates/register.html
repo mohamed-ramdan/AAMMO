@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{# Template title contents go here #}
+{% block title %}
+	Registration page
+{% endblock %}
+
+{# Template body contents go here #}
+{% block body %}
+
+	{# If the registration form object exists that means the user is not logged in. #}
+	{% if register_form %}
+
+		{# Create registration form #}
+		<form method="post" enctype="multipart/form-data" action = "/users/register/">
+
+			{% csrf_token %}
+
+			{{ register_form }}
+
+			<input type = "submit" value="Submit!" />
+
+		</form>
+
+	{# The user is already logged in. Display a message telling him that. #}
+	{% else %}
+
+		<h1>
+			You are already logged in!
+		</h1>
+
+	{% endif %}
+
+{% endblock %}

@@ -14,19 +14,62 @@
 
 	<body>
 
-		{% block header %}
+		<header style="width: 100%; border-bottom: solid #000000;">
 
-			<header>
-				Default HEADER goes here
-			</header>
+			<p>LOGO HERE</p>
+			<p>COMPANY NAME</p>
 
-		{% endblock %}
+			<div id="auth_controls">
+
+				{# The user is already logged in. Display Sign out button #}
+				{% if request.session.logged %}
+
+					{# The logout form #}
+					<form method="POST" action = "/users/logout/">
+						{% csrf_token %}
+						<input name="source_path" type = "hidden" value="{{ request.path }}" />
+						<input type="SUBMIT" value="Logout" />
+					</form>
+
+				{# The user is not logged in. Display login or registration controls.#}
+				{% else %}
+
+					<form method="POST" action = "/users/login/">
+						{% csrf_token %}
+						<input name="source_path" type = "hidden" value="{{ request.path }}" />
+
+						<label for = "username">Username: </label>
+						<input name="username" type = "text" />
+
+						<label for = "user_password">Password: </label>
+						<input name="user_password" type = "password" />
+
+						<input type = "submit" value="Login!" />
+					</form>
+
+					<a href="/users/password_recovery">Forgot password?</a>
+
+					{% if request.session.login_failure %}
+
+						<h2>Incorrect username/password combination!</h2>
+
+					{% endif %}
+
+				{% endif %}
+
+			</div>
+
+
+		</header>
+
 
 		{% block body %}
 
 			Default CONTENT goes here
 
 		{% endblock %}
+
+
 
 		<footer>
 			STATIC FOOTER

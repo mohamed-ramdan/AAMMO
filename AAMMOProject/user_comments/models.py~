@@ -11,5 +11,8 @@ class Comment(models.Model):
 	# Comment foreign key that pointer the article the comment belong to	
 	#article = models.ForeignKey(article)
 
-
+	# A function that handle the return unicode strings from database
+	# @return: the foreign key of the article , and the comment text. 
+	#def __unicode__(self):
+		#return unicode("%s" % (self.body[:60]))
 
