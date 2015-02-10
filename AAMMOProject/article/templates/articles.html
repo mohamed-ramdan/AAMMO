@@ -1,0 +1,46 @@
+<!doctype html>
+	<html>
+		<head>
+			<title>Home</title>
+		</head>
+		
+		<body>
+
+		
+		
+		<div>
+		{% if articles %}
+
+			{%for article in articles%}
+				<p>
+				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
+				<p><img src="{{article.article_photo}}">
+				<p>
+				    {{article.article_body}} 
+				<br>
+				
+				{% for entity in entities %}
+
+
+					{% if entity.id == article.entity_id_id %}
+
+	                  {{entity.entity_date}}  {{entity.entity_time}}
+					
+					{% endif %}
+					
+				{% endfor%}
+
+			{% endfor %}
+
+        {% else %}
+		
+                <p>No Articles </p>
+		
+		{% endif %}
+
+
+		
+		</div>
+
+		</body>
+	</html>
