@@ -39,7 +39,10 @@ def insert_article(request):
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
 		entity_instance.save()
-	
+	except Exception,e:
+		
+		return render(request,'create_article.html',{'message':"you must enter all fields "})
+	try:
 	# The following steps to sava from template in database in article table	
 		article_instance=Article()
 		article_instance.article_title=article_title
@@ -50,10 +53,10 @@ def insert_article(request):
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
 
-		return render(request,'admin_article.html')
-	except:
+		return HttpResponseRedirect("http://127.0.0.1:8000/article/admin_article/") 
+	except Exception,e:
 		
-		return render(request,'create_article.html',{'message':"please enter all fields"})
+		return render(request,'create_article.html',{'message':"you must enter all field"})
 
 	# The try and Exception block to handle the exception from no field is filled 	
 
@@ -102,7 +105,8 @@ def edit_article(request,article_id):
 		article_instance.article_tag=article_tag
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
-		return render(request,'open_article.html',{'article':article})
+	
+		return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/") 
 	except:
 		context={'message':"please enter all fields",'entity':entity_instance,'article':article,'flag':1}
 		return render(request,'create_article.html',context)
@@ -118,20 +122,7 @@ def delete_article(request,article_id):
 	article.delete()
 	instance = Entity.objects.get(id=article.entity_id_id)
 	instance.delete()
-	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
-	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
-	#list of articles which saving on it the selected articles
-	articles_list=[]
-	# for loop that make inner join 
-	#get all articles sorted which the forienkey entity_id in article class equal to id of entity class
-	for instance  in entities:
-		article=Article.objects.get(entity_id=instance.id)
-		#append the article in list of articles
-		articles_list.append(article)
-
-	#saving entities and articles in dictionary list to render to index.html
-	context={'entities': entities,'articles':articles_list}
-	return render(request,'admin.html',context)
+	return HttpResponseRedirect("http://127.0.0.1:8000/article/admin_article/") 
 	
 
 
@@ -255,9 +246,9 @@ def sort_published(request):
 # This function to increase no of likes when user submit like button "article page"
 def like(request,article_id):
 	# get article data by it`s id
-	article_data = get_object_or_404(Article,pk=article_id)
+	article_data=get_object_or_404(Article,pk=article_id)
 	# get information of this article from parent Entity
-	entity=Entity.objects.get(id=article_id)
+	entity=Entity.objects.get(id=article_data.entity_id_id)
 	entity.no_of_likes+=1
 	# saving in database
 	entity.save()
@@ -271,9 +262,9 @@ def like(request,article_id):
 # This function to decrease no of likes when user submit unlike button "article page"
 def unlike(request,article_id):
 	# get article data by it`s id
-	article_data = get_object_or_404(Article,pk=article_id)
+	article_data=get_object_or_404(Article,pk=article_id)
 	# get information of this article from parent Entity
-	entity=Entity.objects.get(id=article_id)
+	entity=Entity.objects.get(id=article_data.entity_id_id)
 	if entity.no_of_likes <= 0: 
 		entity.no_of_likes=0
 	else:
