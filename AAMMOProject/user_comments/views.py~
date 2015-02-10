@@ -6,7 +6,15 @@ def show_comments(request):
 	comments = Comment.objects.all().order_by('created')
 	context={'comments':comments}
 	return render(request,'show_comments.html',context)
+	#return HttpResponse(comments[2].body)
+#filter(author='mona').order_by('created')
+	#comments_list=[]
+	#for instance  in comments:
+		#comment=Comment.objects.get(author='lolo')
+		#comments_list.append(comment)
+	#context=dic{'comments':comments}
 
+	return render(request,'show_comments.html')
 def create_comment(request):
 	return render(request,'comment.html')
 

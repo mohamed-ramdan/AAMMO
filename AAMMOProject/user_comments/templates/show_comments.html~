@@ -1,0 +1,16 @@
+<!-- Comments  section starts -->
+<!-- if there are comments exists then put Comment label-->
+{% if comments %}
+    <p>Comments:</p>
+{% endif %}
+
+<!-- show exist comments -->
+<!-- for the number of comment in comment list then creat div has time % authur and another has the comment text  -->
+{% for comment in comments %}
+    <div class="comment">
+        <div class="time">{{ comment.created }} | {{ comment.author }}</div>
+        <div class="body">{{ comment.body|linebreaks }}</div>
+    </div>
+{% endfor %}
+
+

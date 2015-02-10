@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+	<head>
+		<title>comments page</title>
+	</head>
+	
+	<form method='post' action='/submit/' >{% csrf_token %}
+		author<input type='text' name='author' />
+		<br/>
+		<br/>
+		body<input type='text' name='body' />
+		<br/>
+		<br/>
+		created<input type='text' name='created' />
+		<br/>
+		<br/>
+		<input  type='submit' name='comment' value='comment'> 
+	</form>
+	
+</html>
