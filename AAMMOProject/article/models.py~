@@ -27,7 +27,8 @@ class Entity(models.Model):
 
 
 class Article(models.Model):
-	"""
+	 """
+
 	This is the Article's model class. It contains information pertaining to each Article. A Article can also be published or not,
 	admin only can add article .
 	"""
