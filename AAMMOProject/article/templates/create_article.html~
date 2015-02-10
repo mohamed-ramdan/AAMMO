@@ -3,7 +3,7 @@
 <form method='post' action='/article/edit_article/'>
 {%else%}
 
-<form method='post' action='/article/insert_article/'>
+<form method='post' action='/article/edit_article/'>
 {%endif%}
 {%csrf_token%}
 <div style="height:300px;border:solid;width:400px;float:right"><img src="10734094_10152850590443958_4272049440550589677_n.jpg"></div>

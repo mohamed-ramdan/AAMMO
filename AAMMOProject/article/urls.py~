@@ -19,7 +19,7 @@ urlpatterns = [
 
      url(r'^unlike/(?P<article_id>\d+)/$','article.views.unlike'),
 
-     url(r'^open_article/(?P<article_id>\d+)/$','article.views.open_article'),
+     url(r'^open_article/(?P<article_id>\d+)/$','article.views.open_article')
 
 
      url(r'^insert_article/$','article.views.insert_article'),
