@@ -5,30 +5,30 @@
 	Registration page
 {% endblock %}
 
-{# Template header contents go here #}
-{% block header %}
-
-	<header>
-		<p>
-			Logo Goes Here
-		</p>
-
-	</header>
-
-{% endblock %}
-
 {# Template body contents go here #}
 {% block body %}
 
-	{# Create registration form #}
-	<form method="post" enctype="multipart/form-data" action = "/users/register/">
+	{# If the registration form object exists that means the user is not logged in. #}
+	{% if register_form %}
 
-		{% csrf_token %}
+		{# Create registration form #}
+		<form method="post" enctype="multipart/form-data" action = "/users/register/">
 
-		{{ register_form }}
+			{% csrf_token %}
 
-		<input type = "submit" value="Submit!" />
+			{{ register_form }}
 
-	</form>
+			<input type = "submit" value="Submit!" />
+
+		</form>
+
+	{# The user is already logged in. Display a message telling him that. #}
+	{% else %}
+
+		<h1>
+			You are already logged in!
+		</h1>
+
+	{% endif %}
 
 {% endblock %}

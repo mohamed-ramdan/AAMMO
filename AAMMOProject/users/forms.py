@@ -1,5 +1,6 @@
 from captcha.fields import CaptchaField
 from django import forms
+from users.models import Users
 
 
 class RegisterForm(forms.Form):
@@ -31,7 +32,7 @@ class RegisterForm(forms.Form):
 
 	# The password confirmation field for the login form.
 	user_password_confirm = forms.CharField(
-		label="Enter your password",
+		label="Confirm your password",
 		max_length=100,
 		widget=forms.PasswordInput(attrs={'placeholder': 'Re-enter password here ...'})
 	)
@@ -85,23 +86,25 @@ class RegisterForm(forms.Form):
 		else:
 			raise forms.ValidationError("Could not read uploaded image! Type not supported!")
 
+	def clean_user_name(self):
+		"""
+		This function checks whether the username is duplicated or not.
+		:return:
+		"""
 
-class LoginForm(forms.Form):
-	"""
-	This is the class that defines a login form for the user. It will appear in the header as a drop down menu only
-	when the user is not logged in.
-	"""
+		# The user's user name.
+		filled_user_name = self.cleaned_data['user_name']
 
-	# The username field for the login form.
-	user_name = forms.CharField(
-		label="Enter user name: ",
-		max_length=100,
-		widget=forms.TextInput(attrs={'placeholder': 'Enter username here ...'})
-	)
+		try:
+			# Query the database with the filled user name.
+			Users.objects.get(user_name=filled_user_name)
+		except Users.DoesNotExist:
+			found_users = False
+		else:
+			found_users = True
 
-	# The password field for the login form
-	user_password = forms.CharField(
-		label="Enter your password: ",
-		max_length=100,
-		widget=forms.PasswordInput(attrs={'placeholder': 'Enter password here ...'})
-	)
+		# The user name is duplicated. Raise validation error.
+		if found_users:
+			raise forms.ValidationError("The user name already exists! Please choose another one.")
+		else:
+			return filled_user_name

@@ -14,7 +14,7 @@ class Users(models.Model):
 	user_facebook_id = models.IntegerField(unique=True,null=True)
 
 	# The user's name field.
-	user_name = models.CharField(max_length=100)
+	user_name = models.CharField(unique=True,max_length=100)
 
 	# The user's password field.
 	user_password = models.CharField(max_length=100)
