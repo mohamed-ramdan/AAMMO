@@ -49,25 +49,27 @@ def insert_article(request):
 		article_instance.article_tag=article_tag
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
-		return HttpResponse('hiii')
+
+		return render(request,'admin_article.html')
 	except:
-		return HttpResponse('NOOO')
+		
+		return render(request,'create_article.html',{'message':"please enter all fields"})
 
 	# The try and Exception block to handle the exception from no field is filled 	
 
 
 # This is function of take the value from data base and put them in template 
-def article(request):
-	
-	entity_instance=Entity.objects.get(id=14)
-	article_instance=Article.objects.get(entity_id_id=14)
+def article(request,article_id):
+	article=Article.objects.get(pk=article_id)
+	entity_instance=Entity.objects.get(id=article.entity_id_id)
+	article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
 	context={'entity':entity_instance,'article':article_instance,'flag':1}
 	return render(request,'create_article.html',context)
 
 # This is function of editing in the article 	
 #search by id and save in database  fadlha bs eni ab3tlha id k paramaeter 
 
-def edit_article(request):
+def edit_article(request,article_id):
 	try:
 	# The following is to read from templates
 		photo_path=request.POST['article_photo']
@@ -84,14 +86,15 @@ def edit_article(request):
 			article_publish=0
 
 	# The following steps to save what we read from templates in database in entity table
-		entity_instance=Entity.objects.get(id=14)
+		article=Article.objects.get(pk=article_id)
+		entity_instance=Entity.objects.get(id=article.entity_id_id)
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
 		entity_instance.save()
 	
 	# The following steps to save what we read from templates in database in article table	
-		article_instance=Article.objects.get(entity_id_id=14)
+		article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
 		article_instance.article_title=article_title
 		article_instance.article_body=article_body
 		article_instance.article_photo=photo_path
@@ -99,57 +102,37 @@ def edit_article(request):
 		article_instance.article_tag=article_tag
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
-		return HttpResponse('hiii')
+		return render(request,'open_article.html',{'article':article})
 	except:
-		return HttpResponse('you must enter the paramater')
+		context={'message':"please enter all fields",'entity':entity_instance,'article':article,'flag':1}
+		return render(request,'create_article.html',context)
 	
 	# The try and Exception block to handle the exception from no field is filled 	
 
 
-# This is function to delete an article fadl ab3t f paramater id w dh elly 3ml search beh 
-def delete_article(request):
-	try:
-		article=Article.objects.get(entity_id_id=8)
-		article.delete()
-		instance = Entity.objects.get(id=7)
-		instance.delete()
-		return HttpResponse('hiii')
-	except:
-		return HttpResponse('NOOOO')
+# This is function to delete an article 
+def delete_article(request,article_id):
+	
+	article=Article.objects.get(pk=article_id)
+	article=Article.objects.get(entity_id_id=article.entity_id_id)
+	article.delete()
+	instance = Entity.objects.get(id=article.entity_id_id)
+	instance.delete()
+	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
+	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
+	#list of articles which saving on it the selected articles
+	articles_list=[]
+	# for loop that make inner join 
+	#get all articles sorted which the forienkey entity_id in article class equal to id of entity class
+	for instance  in entities:
+		article=Article.objects.get(entity_id=instance.id)
+		#append the article in list of articles
+		articles_list.append(article)
 
-	#The try and Exception block to handle the exception if the selected article to delete not found
-
-
-
-
-# This is function of take tags 
-#fadl ab3t id k parameter
-def relate_article(request):
-	list1=[]
-	# This line to get current Article by id
-	article=Article.objects.get(entity_id=17)
-	# This line to select all from article table
-	tags=Article.objects.all()
-	# This line to split tag  of current article into list
-        current_tag=article.article_tag.split(',')
-	# This is for loop to get row by row from Article table
-	for tag in tags:
-		# This is to split tag of selected row
-		selected_tag=tag.article_tag.split(',')
-		# This two for loop is to compare word by wo
-		for word in selected_tag :
-			for current in current_tag:
-				# The if statement is to compare selected word from selected tag row  and selected word from current tag  
-				if current==word:
-					# Append the correct tag in list
-					list1.append(tag)
-			#Break statement to not repeat the apend 		
-			break
-			
-			
-		
-	context={'tag':list1}
-	return render(request,'article.html',context)
+	#saving entities and articles in dictionary list to render to index.html
+	context={'entities': entities,'articles':articles_list}
+	return render(request,'admin.html',context)
+	
 
 
 # This function to list articles  limitted by 5 articles "home page"
@@ -196,9 +179,31 @@ def list_articles(request):
 
 # This function to select article with it`s  "article page"
 def open_article(request,article_id):
-	article_data = get_object_or_404(Article,pk=article_id)
-	entity=Entity.objects.get(id=article_id)
-	context={'article':article_data,'entity':entity}
+	article_data=get_object_or_404(Article,pk=article_id)
+	entity=Entity.objects.get(id=article_data.entity_id_id)
+	# related tags in article page
+	list1=[]
+	# This line to get current Article by id
+	article=Article.objects.get(entity_id=article_data.entity_id_id)
+	# This line to select all from article table
+	tags=Article.objects.all()
+	# This line to split tag  of current article into list
+        current_tag=article.article_tag.split(',')
+	# This is for loop to get row by row from Article table
+	for tag in tags:
+		# This is to split tag of selected row
+		selected_tag=tag.article_tag.split(',')
+		# This two for loop is to compare word by wo
+		for word in selected_tag :
+			for current in current_tag:
+				# The if statement is to compare selected word from selected tag row  and selected word from current tag  
+				if current==word:
+					# Append the correct tag in list
+					list1.append(tag)
+			#Break statement to not repeat the apend 		
+			break
+
+	context={'article':article_data,'entity':entity,'tag':list1}
 	return render(request,'article.html',context)
 
 

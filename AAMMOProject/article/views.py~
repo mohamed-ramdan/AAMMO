@@ -84,14 +84,14 @@ def edit_article(request):
 			article_publish=0
 
 	# The following steps to save what we read from templates in database in entity table
-		entity_instance=Entity.objects.get(id=14)
+		entity_instance=Entity.objects.get(id=4)
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
 		entity_instance.save()
 	
 	# The following steps to save what we read from templates in database in article table	
-		article_instance=Article.objects.get(entity_id_id=14)
+		article_instance=Article.objects.get(entity_id_id=4)
 		article_instance.article_title=article_title
 		article_instance.article_body=article_body
 		article_instance.article_photo=photo_path

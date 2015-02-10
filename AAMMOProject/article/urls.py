@@ -24,13 +24,12 @@ urlpatterns = [
 
      url(r'^insert_article/$','article.views.insert_article'),
 
-	 url(r'^delete_article/$','article.views.delete_article'),
+	 url(r'^delete_article/(?P<article_id>\d+)/$','article.views.delete_article'),
 
-	 url(r'^article/$','article.views.article'),
+	 url(r'^article/(?P<article_id>\d+)/$','article.views.article'),
 
-	 url(r'^edit_article/$','article.views.edit_article'),
+	 url(r'^edit_article/(?P<article_id>\d+)/$','article.views.edit_article'),
 
-	 url(r'^relate_article/$','article.views.relate_article'),
 
 
 ]

@@ -1,6 +1,6 @@
 <html>
 {%if flag%}
-<form method='post' action='/article/edit_article/'>
+<form method='post' action='/article/edit_article/{{article.id}}/'>
 {%else%}
 
 <form method='post' action='/article/insert_article/'>
@@ -26,10 +26,15 @@ Article Time<br><input type='time' name='article_time' value={{entity.entity_tim
 {%else%}
 <br><input type='checkbox' name='publish_article' >Publish Artcile
 {%endif%}
+{% if message%}
+<br>
+{{message}}
+{% endif %}
 <br>
 <input type='submit' name='save_article' value='save' >
 
 <form>
+
 
 
 
