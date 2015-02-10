@@ -1,10 +1,4 @@
-<<<<<<< HEAD
 
-{%for onetag in tag%}
-<a href= "aya">{{onetag.article_title}}</a>
-<br>
-{%endfor%}
-=======
 <!doctype html>
 <html>
 	<head>
@@ -49,9 +43,12 @@
 			comments there
 		</div>
 		<div class="articl" style="wdith:100px ;height:100px; border:solid ">
-		related articles
+				{%for onetag in tag%}
+		               <a href= "aya">{{onetag.article_title}}</a>
+		               <br>
+                               {%endfor%}
 	    </div>
 
 	</body>
 </html>
->>>>>>> 431ac1a35352dcbf588e6603d735d137a9bb2588
+

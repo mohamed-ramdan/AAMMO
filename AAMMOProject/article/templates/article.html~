@@ -1,5 +1,57 @@
+<<<<<<< HEAD
 
-{%for onetag in tag%}
-<a href= "aya">{{onetag.article_title}}</a>
-<br>
-{%endfor%}
+
+=======
+<!doctype html>
+<html>
+	<head>
+		<title>Article page</title>
+	</head>
+	<body>
+			
+		
+		<p> {{article.article_title}}
+
+		<p>     <div class="articl_photos" style="wdith:50px ;height:50px; border:solid ">
+				<img src="{{article.article_photo}}">
+				</div>
+		<p>		
+		<div class="articl" style="wdith:200px ;height:200px; border:solid ">
+		{{article.article_body}}
+
+
+	    </div>
+	    <p>
+	    {{entity.entity_date}} {{entity.entity_time}}
+
+	    		<form method='post' action=''>
+	    		{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
+				</form>
+				<form method='post' action=''>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
+		        </form>
+		        <form method='post' action='/article/like/{{article.id}}/'>
+		        {% csrf_token %}
+		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
+		       </form>
+		       No of likes={{entity.no_of_likes}}
+		       <form method='post' action='/article/unlike/{{article.id}}/'>
+		       {% csrf_token %}
+		        <input  onclick='validate()'  type='submit' name='like' value='Unlike'>
+		       </form>
+
+		<div>
+			comments there
+		</div>
+		<div class="articl" style="wdith:100px ;height:100px; border:solid ">
+				{%for onetag in tag%}
+		               <a href= "aya">{{onetag.article_title}}</a>
+		               <br>
+                               {%endfor%}
+	    </div>
+
+	</body>
+</html>
+

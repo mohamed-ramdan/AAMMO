@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
-from article.models import Entity
-from article.models import Article
+from django.http import HttpResponseRedirect
+from article.models import Entity,Article
 
 # Create your views here.
 
@@ -153,15 +152,6 @@ def relate_article(request):
 	return render(request,'article.html',context)
 
 
-=======
-from django.shortcuts import render,get_object_or_404
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from article.models import Entity,Article
-
-
- 
-
 # This function to list articles  limitted by 5 articles "home page"
 def home_article(request):
     # select all entites which type=2 that mean it`s article type sorting first by date then by time 
@@ -291,4 +281,3 @@ def unlike(request,article_id):
 
 
 
->>>>>>> 431ac1a35352dcbf588e6603d735d137a9bb2588
