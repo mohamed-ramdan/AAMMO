@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{# Template title contents go here #}
+{% block title %}
+	Edit information
+{% endblock %}
+
+{# Template body contents go here #}
+{% block body %}
+
+	{% if edit_form %}
+		<form enctype="multipart/form-data" method="POST" action = "/users/edit/">
+			{% csrf_token %}
+
+			{{ edit_form }}
+
+			<input type = "submit" value="Confirm Changes" />
+
+		</form>
+
+
+	{% elif edit_status %}
+
+		<h2>Changes have been made successfully!</h2>
+
+	{% endif %}
+
+{% endblock %}
