@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+
+=======
 <!doctype html>
 <html>
 	<head>
@@ -21,11 +24,11 @@
 	    <p>
 	    {{entity.entity_date}} {{entity.entity_time}}
 
-	    		<form method='post' action='/article/article/{{article.id}}/'>
+	    		<form method='post' action=''>
 	    		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
 				</form>
-				<form method='post' action='/article/delete_article/{{article.id}}/'>
+				<form method='post' action=''>
 				{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
 		        </form>

@@ -32,7 +32,7 @@
 		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='published' value='Published'>
 				</form>
-		<form method='post' action='/article/createarticle/'>
+		<form method='post' action=''>
 		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='create' value='Create Article'>
 				</form>  
