@@ -21,6 +21,7 @@
 			<input type = "submit" value="Submit!" />
 
 		</form>
+		<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Sign Up using Facebook</a>
 
 	{# The user is already logged in. Display a message telling him that. #}
 	{% else %}
