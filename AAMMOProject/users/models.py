@@ -1,3 +1,4 @@
+from PIL import Image
 from django.db import models
 
 
@@ -23,7 +24,20 @@ class Users(models.Model):
 	user_email = models.EmailField(max_length=255, unique=True)
 
 	# The path to the user's profile picture. This will be created in the MEDIA_ROOT path folder.
-	user_image_path = models.FileField(upload_to='profile_pics/%Y/%m/%d', null=True)
+	user_image_path = models.FileField(upload_to='  profile_pics/%Y/%m/%d', null=True)
 
 	# The user's admin status, default => Not an admin
 	user_admin_status = models.BooleanField(default=False)
+
+	# def save(self):
+	# 	"""
+	# 	Save photo. Resize as needed.
+	# 	:return:
+	# 	"""
+	# 	super(Users, self).save()
+	#
+	# 	image_filename = self.get_source_filename()
+	# 	new_image = Image.open(image_filename)
+	#
+	# 	new_image.thumbnail((200,200), Image.ANTIALIAS)
+	# 	new_image.save(image_filename)

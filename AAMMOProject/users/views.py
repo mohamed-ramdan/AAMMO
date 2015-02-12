@@ -1,8 +1,11 @@
+from PIL import Image
 import random
 import urllib2
+import StringIO
 import django.contrib.auth
 
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.files.images import ImageFile
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
@@ -50,7 +53,10 @@ def register(request):
 
 					# Set the logged session variable to true to indicate that the user is logged in.
 					request.session['logged'] = True
+					# Set the logged user name to the logged in username.
 					request.session['username'] = new_user.user_name
+					# Set the logged user profile picture path.
+					request.session['user_image'] = str(new_user.user_image_path)
 
 					# Format: subject,body,host to use,recipients,fail_silently
 					send_mail(
@@ -79,13 +85,10 @@ def register(request):
 
 				# Create a url GET request to get the profile picture of the user.
 				image_request_url = 'http://graph.facebook.com/'+facebook_id+'/picture?type=large'
-				image_request = urllib2.Request(image_request_url)
-				facebook_image_raw = urllib2.urlopen(image_request).read()
+				facebook_image_raw = urllib2.urlopen(image_request_url).read()
 
-				facebook_image = NamedTemporaryFile(delete=True)
-				facebook_image.write(facebook_image_raw)
-				facebook_image.flush()
-				facebook_image_upload = UploadedFile(facebook_image)
+				# Create image object from image that was read.
+				facebook_image = ImageFile(facebook_image_raw)
 
 				register_initial_data = {
 					'user_name': facebook_username,
@@ -198,6 +201,8 @@ def login_facebook(request):
 			request.session['logged'] = True
 			# Set the logged user name to the logged in username.
 			request.session['username'] = logged_user.user_name
+			# Set the logged user profile picture path.
+			request.session['user_image'] = logged_user.user_image_path
 
 		# The user doesn't exist in the first place. Redirect to the registration page.
 		except Users.DoesNotExist:
