@@ -8,8 +8,13 @@
 		<body>
 
 		<div class="buttons">
+				{% if admin_flag %}
 				<form method='post' action='/article/admin_article/'>
 				{% csrf_token %}
+				{% else %}
+				<form method='post' action='/article/home_article/'>
+				{% csrf_token %}
+				{% endif %}
 				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
 				</form>
 				<form method='post' action='/article/list_articles/'>

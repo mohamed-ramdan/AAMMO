@@ -72,7 +72,7 @@ No of likes={{entity.no_of_likes}}
 		</div>
 		<div class="articl" style="wdith:100px ;height:100px; border:solid ">
 				{%for onetag in tag%}
-		               <a href= "aya">{{onetag.article_title}}</a>
+		               <a href= '/article/open_article/{{onetag.id}}'>{{onetag.article_title}}</a>
 		               <br>
                                {%endfor%}
 	    </div>

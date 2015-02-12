@@ -182,7 +182,7 @@ def check(request):
 	""" This is a function to check whether login person is admin or user """
 	
 	# Take id of login person
-	check_user=Users.objects.get(pk=2)
+	check_user=Users.objects.get(pk=1)
 
 	# Check by attribute admin status 
 	if check_user.user_admin_status:
@@ -241,8 +241,18 @@ def list_articles(request):
 		#append the article in list of articles
 		articles_list.append(article)
 
+
+	# to check this user is admin or user
+	user_data=get_object_or_404(Users,pk=1)
+	# check for admin status 
+	if user_data.user_admin_status:
+		# admin flag =1 that mean this user is admin
+		admin_flag=1
+	else:
+		admin_flag=0
+
 	#saving entities and articles in dictionary list to render to index.html
-	context={'entities': entities,'articles':articles_list}
+	context={'entities': entities,'articles':articles_list,'admin_flag':admin_flag}
 	return render(request,'articles.html',context)
 
 
@@ -284,7 +294,7 @@ def open_article(request,article_id):
 	
 
 	# to check this user is admin or user
-	user_data=get_object_or_404(Users,pk=2)
+	user_data=get_object_or_404(Users,pk=1)
 	# check for admin status 
 	if user_data.user_admin_status:
 		# admin flag =1 that mean this user is admin
