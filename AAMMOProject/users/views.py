@@ -1,8 +1,14 @@
 import random
+import urllib2
+import django.contrib.auth
 
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.files.temp import NamedTemporaryFile
+from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
+from django.http.response import Http404
 from django.shortcuts import render, redirect
+from social.apps.django_app.default.models import UserSocialAuth
 
 from AAMMOProject import settings
 from users.forms import RegisterForm, RecoverPasswordForm, EditForm
@@ -22,15 +28,8 @@ def register(request):
 	# The default context is empty. Nothing should be sent if the user doesn't need the registration form.
 	context = {}
 
-	# Check for the existence of the session variable logged and set it to false if it doesn't exist. The user is
-	# obviously not logged in.
-	try:
-		request.session['logged']
-	except KeyError:
-		request.session['logged'] = False
-
 	# If the user is not logged in.
-	if request.session['logged'] is False:
+	if 'logged' not in request.session:
 		# If the request method is post, then this page was loaded because the user submitted the form,
 		# not just navigated to it.
 		if request.method == 'POST':
@@ -68,10 +67,37 @@ def register(request):
 					# Go to the index page since you successfully logged in.
 					return redirect(route_url)
 
-		# The method was GET, that means the user just navigated to the register form page.
+		# The method was GET, that means the user just navigated to the register form page or the form was redirected
+		#  from a facebook register request.
 		else:
-			# Create new empty registration form.
-			registration_form = RegisterForm()
+			# If a facebook user was defined
+			if request.user and not request.user.is_anonymous():
+				# Get the facebook user name, email and id from the database.
+				facebook_username = request.user.username
+				facebook_email = request.user.email
+				facebook_id = UserSocialAuth.objects.get(id=request.user.id).uid
+
+				# Create a url GET request to get the profile picture of the user.
+				image_request_url = 'http://graph.facebook.com/'+facebook_id+'/picture?type=large'
+				image_request = urllib2.Request(image_request_url)
+				facebook_image_raw = urllib2.urlopen(image_request).read()
+
+				facebook_image = NamedTemporaryFile(delete=True)
+				facebook_image.write(facebook_image_raw)
+				facebook_image.flush()
+				facebook_image_upload = UploadedFile(facebook_image)
+
+				register_initial_data = {
+					'user_name': facebook_username,
+					'user_email': facebook_email,
+				}
+
+				# Create new registration form with facebook info
+				registration_form = RegisterForm(register_initial_data)
+
+			else:
+				# Create new empty registration form.
+				registration_form = RegisterForm()
 
 		# The registration form data to the register page.
 		context = {
@@ -134,10 +160,57 @@ def login(request):
 
 		# The user didn't log in successfully.
 		except Users.DoesNotExist:
-			request.session['logged'] = False
 			request.session['login_failure'] = True
 
 	return response
+
+
+def login_facebook(request):
+	"""
+	This function performs the actions necessary to login with facebook. If the email is matched with an email in the
+	database, check if the facebook id of that email exists or not, if it doesn't, add it. If it does, just login. If
+	the email doesn't match, then go to the registration page.
+	:param request:
+	:return:
+	"""
+	# The facebook user data has been received successfully.
+	if request.user and not request.user.is_anonymous():
+		# Get the facebook user name, email and id from the database.
+		facebook_username = request.user.username
+		# Get the user's facebook registered email.
+		facebook_email = request.user.email
+		# The true Facebook id is in the python_auth_social migrated tables. You index it with the ID in the user object
+		# returned from facebook.
+		facebook_id = UserSocialAuth.objects.get(id=request.user.id).uid
+
+		# Try getting the user with the given email from the "local" database.
+		try:
+			# Query the database with the facebook email.
+			logged_user = Users.objects.get(user_email=facebook_email)
+
+			# A user was found with the same facebook email and his facebook id is still null. Add it.
+			if not logged_user.user_facebook_id:
+				# Set the user's Facebook id with the Facebook received id and save it to the database.
+				logged_user.user_facebook_id = facebook_id
+				logged_user.save()
+
+			# Login the user. Set the session variable to logged.
+			request.session['logged'] = True
+			# Set the logged user name to the logged in username.
+			request.session['username'] = logged_user.user_name
+
+		# The user doesn't exist in the first place. Redirect to the registration page.
+		except Users.DoesNotExist:
+			return redirect("/users/register/")
+
+	# Facebook did not return any data. An error has occurred.
+	else:
+		raise Http404("Could not fetch Facebook information!")
+
+	# Get the page where the original login request occurred from.
+	original_page = request.GET['next']
+
+	return redirect(original_page)
 
 
 def logout(request):
@@ -155,9 +228,8 @@ def logout(request):
 		# Get source page path for redirect
 		source_path = request.POST['source_path']
 
-		# Set the logged session variable to false and delete username session variable.
-		request.session['logged'] = False
-		del request.session['username']
+		# Logout from the social backend, which simply clears all session variables.
+		django.contrib.auth.logout(request)
 
 		# Delete the saved cookie that contains the logged user name if it exists.
 		response = redirect(source_path)

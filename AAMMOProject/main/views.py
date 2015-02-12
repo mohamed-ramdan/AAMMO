@@ -7,4 +7,4 @@ def index(request):
 	:param request:
 	:return:
 	"""
-	return render(request,'index.html')
+	return render(request, 'index.html')
