@@ -1,7 +1,8 @@
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect,HttpResponseForbidden
-from article.models import Entity,Article
+from article.models import Entity,Article,Likes
+from users.models import Users
 from article.forms import UploadImageForm
 
 
@@ -47,6 +48,7 @@ def insert_article(request):
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
+		entity_instance.author_id_id=1
 		entity_instance.save()
 
 	except Exception,e:
@@ -175,6 +177,27 @@ def delete_article(request,article_id):
 
 
 
+ 	
+def check(request):
+	""" This is a function to check whether login person is admin or user """
+	
+	# Take id of login person
+	check_user=Users.objects.get(pk=1)
+
+	# Check by attribute admin status 
+	if check_user.user_admin_status:
+
+		# If the login person is admin then goto admin page
+		return HttpResponseRedirect("http://127.0.0.1:8000/article/admin_article/") 
+	else:
+
+		# If the login person is user then goto homw page
+		return HttpResponseRedirect("http://127.0.0.1:8000/article/home_article/") 
+
+
+
+
+
 
 def home_article(request):
 
@@ -218,8 +241,18 @@ def list_articles(request):
 		#append the article in list of articles
 		articles_list.append(article)
 
+
+	# to check this user is admin or user
+	user_data=get_object_or_404(Users,pk=1)
+	# check for admin status 
+	if user_data.user_admin_status:
+		# admin flag =1 that mean this user is admin
+		admin_flag=1
+	else:
+		admin_flag=0
+
 	#saving entities and articles in dictionary list to render to index.html
-	context={'entities': entities,'articles':articles_list}
+	context={'entities': entities,'articles':articles_list,'admin_flag':admin_flag}
 	return render(request,'articles.html',context)
 
 
@@ -237,6 +270,9 @@ def open_article(request,article_id):
 	list1=[]
 	# This line to get current Article by id
 	article=Article.objects.get(entity_id=article_data.entity_id_id)
+	
+
+
 	# This line to select all from article table
 	tags=Article.objects.all()
 	# This line to split tag  of current article into list
@@ -255,12 +291,46 @@ def open_article(request,article_id):
 			#Break statement to not repeat the apend 		
 			break
 
-	context={'article':article_data,'entity':entity,'tag':list1}
+	
+
+	# to check this user is admin or user
+	user_data=get_object_or_404(Users,pk=1)
+	# check for admin status 
+	if user_data.user_admin_status:
+		# admin flag =1 that mean this user is admin
+		admin_flag=1
+	else:
+		admin_flag=0
+
+	
+
+
+	# to check even user is liked in this article or not to display like or unlike button
+	
+	#select all users and it`s articles that making like on it
+	all_user=Likes.objects.all()
+	
+	#flag to decide which display like button or unlike button
+	#flag=0 that mean like button is visible
+	flag=0
+	# for loop to get every user with it`s article
+	for current_user in all_user:
+		#check if user in table of likes or not
+		if current_user.user_like_id_id==2:
+			# if current user likes this article or not
+			if current_user.entity_like_id_id==article_data.entity_id_id:
+				#flag=1 mean unlike button is visible
+				flag=1 
+				break
+	#check the value of flag 
+	if flag==1:
+		context={'article':article_data,'entity':entity,'tag':list1,'flag':1,'admin_flag':admin_flag}
+		
+	else:
+		context={'article':article_data,'entity':entity,'tag':list1,'flag':0,'admin_flag':admin_flag}
+	
 	return render(request,'article.html',context)
-
-
-
-
+		
 
 
 
@@ -322,6 +392,11 @@ def like(request,article_id):
 	entity.no_of_likes+=1
 	# saving in database
 	entity.save()
+	# saving that user likes this article
+	like=Likes()
+	like.user_like_id_id=2
+	like.entity_like_id_id=article_data.entity_id_id
+	like.save()
 	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/") 
 
 
@@ -343,7 +418,20 @@ def unlike(request,article_id):
 		entity.no_of_likes-=1
 	# saving in database
 	entity.save()
+	# to delete the like of the user on the related article
+	all_user=Likes.objects.all()
+
+	# for loop to get every user with it`s article
+	for current_user in all_user:
+		#check if this user in table of likes or not
+		if current_user.user_like_id_id==2:
+			# if current user likes this article or not
+			if current_user.entity_like_id_id==article_data.entity_id_id:
+				# delete his like
+				current_user.delete()
+
 	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/")
+	
 
 
 

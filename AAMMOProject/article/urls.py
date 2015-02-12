@@ -30,6 +30,8 @@ urlpatterns = [
 
 	 url(r'^edit_article/(?P<article_id>\d+)/$','article.views.edit_article'),
 
+    url(r'^check/$','article.views.check'),
+
 
 
 ]
