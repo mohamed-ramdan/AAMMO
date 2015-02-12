@@ -1,4 +1,6 @@
+from django.contrib.auth import logout
 from django.shortcuts import render
+from users.models import Users
 
 
 def index(request):
@@ -7,4 +9,5 @@ def index(request):
 	:param request:
 	:return:
 	"""
+
 	return render(request, 'index.html')

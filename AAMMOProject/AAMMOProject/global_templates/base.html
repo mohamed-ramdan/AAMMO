@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+{% load staticfiles %}
 
 	<head lang = "en">
 
@@ -19,7 +20,7 @@
 
 			{% if request.session.logged %}
 				<div>
-					<img src = "" />
+					<img src = "{% static request.session.user_image %}" />
 					<h3>Welcome {{ request.session.username }}!</h3>
 				</div>
 			{% endif %}
