@@ -1,83 +1,98 @@
 <!doctype html>
-	<html>
-		<head>
-			<title>Home</title>
-		</head>
-		
-		<body>
-		
-		<div class="header" >
+{% load static %} 
 
-				
-				<div class="articl_photos" style="wdith:100px ;height:100px; border:solid ">
-				{% if articles %}
-				<img src="{{article.article_photo}}">
-				{% endif %}
+<html>
+    <head>
+        <title>Home</title>
+    </head>
 
-				</div>
-				<form method='post' action=''>
-				{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='next' value='Next'> 
-				</form>
-				<form method='post' action=''>
-				{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='prev' value='Prev'>
-				</form> 
-		</div>
-		<form method='post' action='/article/admin_article/'>
-		{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='date' value='Date'>
-				</form> 
-		<form method='post' action='/article/sort_published/'>
-		{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='published' value='Published'>
-				</form>
-		<form method='post' action='/article/createarticle/'>
-		{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='create' value='Create Article'>
-				</form>  
+    <body>
 
-		<div>
-		{% if articles %}
-
-			{%for article in articles%}
-				<p>
-				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
-
-				<p><img src="{{article.article_photo}}">
-				<p>
-				    {{article.article_body}} 
-				<br/>
-				
-				{% for entity in entities %}
+        <div class="header" >
 
 
-					{% if entity.id == article.entity_id_id %}
+            <div class="articl_photos" style="wdith:100px ;height:100px; border:solid ">
+                {% for article in articles %}
+                <img src="/{{article.article_photo}}" width="100px" height="100px">
+                {% endfor %}
 
-	                  {{entity.entity_date}}  {{entity.entity_time}}
-		                  {% if entity.article_published == 0 %}
-			                  	<br/>
-			                  	not published
-		                  	{% else %}
-			                  	<br/>
-			                  	published
-		                  	{% endif %}
-					
-					{% endif %}
-					
-				{% endfor%}
+            </div>
+            <form method='post' action=''>
+                {% csrf_token %}
+                <input  onclick='validate()'  type='submit' name='next' value='Next'> 
+            </form>
+            <form method='post' action=''>
+                {% csrf_token %}
+                <input  onclick='validate()'  type='submit' name='prev' value='Prev'>
+            </form> 
+        </div>
+        <form method='post' action='/article/admin_article/'>
+            {% csrf_token %}
+            <input  onclick='validate()'  type='submit' name='date' value='Date'>
+        </form> 
+        <form method='post' action='/article/sort_published/'>
+            {% csrf_token %}
+            <input  onclick='validate()'  type='submit' name='published' value='Published'>
+        </form>
+        <form method='post' action='/article/createarticle/'>
+            {% csrf_token %}
+            <input  onclick='validate()'  type='submit' name='create' value='Create Article'>
 
-			{% endfor %}
+        </form>  
 
-        {% else %}
-		
-                <p>No Articles </p>
-		
-		{% endif %}
+        <div class="buttons">
+            <form method='post' action='/article/admin_article/'>
+                {% csrf_token %}
+                <input  onclick='validate()'  type='submit' name='home' value='Home'> 
+            </form>
+            <form method='post' action='/article/list_articles/'>
+                {% csrf_token %}
+                <input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+            </form>
+
+        </div>
+
+        <div>
+            {% if articles %}
+
+            {%for article in articles%}
+            <p>
+                <a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
+
+            <p><img src="/{{article.article_photo}}">
+            <p>
+                {{article.article_body}} 
+                <br/>
+
+                {% for entity in entities %}
 
 
-		
-		</div>
+                {% if entity.id == article.entity_id_id %}
 
-		</body>
-	</html>
+                {{entity.entity_date}}  {{entity.entity_time}}
+                {% if entity.article_published == 0 %}
+                <br/>
+                not published
+                {% else %}
+                <br/>
+                published
+                {% endif %}
+
+                {% endif %}
+
+                {% endfor%}
+
+                {% endfor %}
+
+                {% else %}
+
+            <p>No Articles </p>
+
+            {% endif %}
+
+
+
+        </div>
+
+    </body>
+</html>

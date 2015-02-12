@@ -1,28 +1,37 @@
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponseForbidden
 from article.models import Entity,Article
+from article.forms import UploadImageForm
 
-# Create your views here.
 
-# This is function of go to the page of adding new article
+
+
 def createarticle(request):
+	""" This is function of go to the page of adding new article"""
 	return render(request,'create_article.html')
 	
 
 
 
-# This is function of adding new Article
+
+
+
 def insert_article(request):
+
+	""" This is function of adding new Article"""
+
+	
+	# The try and Exception block to handle the exception from no field is filled 
 	try:    
-	# The following to take value from template
-		photo_path=request.POST['article_photo']
-		article_title=request.POST['article_title']	
+	# The following to take value from create article page
+		article_title=request.POST['article_title']
 		article_tag=request.POST['article_tag']
 		article_body=request.POST['article_body']
 		article_date=request.POST['article_date']
 		article_time=request.POST['article_time']
 
+	
 	# In the data base article type take number 2 in the entity table
 		entity_type=2
 		query_list=request.POST.getlist('publish_article')
@@ -33,62 +42,85 @@ def insert_article(request):
 		else :
 			article_publish=0
 
-	# The following steps to sava from template in database in entity table
+	# The following steps to sava from create_article page in database in entity table
 		entity_instance=Entity()
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
 		entity_instance.save()
+
 	except Exception,e:
-		
-		return render(request,'create_article.html',{'message':"you must enter all fields "})
+
+		return render(request,'create_article.html',{'message':"please enter all fields"})
 	try:
-	# The following steps to sava from template in database in article table	
+	# The following steps to save from create_article page in database in article table
+		
+		# uploading picture to Article from file or noimage inserted
 		article_instance=Article()
+		form = UploadImageForm(request.POST, request.FILES)
+		if form.is_valid():
+			article_instance.article_photo = form.cleaned_data['image']
+		else:
+			article_instance.article_photo ="noimage.jpg"
+
+		# cont saving all parameters of article
 		article_instance.article_title=article_title
 		article_instance.article_body=article_body
-		article_instance.article_photo=photo_path
 		article_instance.article_published=article_publish
 		article_instance.article_tag=article_tag
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
-
 		return HttpResponseRedirect("http://127.0.0.1:8000/article/admin_article/") 
 	except Exception,e:
-		
-		return render(request,'create_article.html',{'message':"you must enter all field"})
+		return render(request,'create_article.html',{'message':"please enter all fields"})
 
-	# The try and Exception block to handle the exception from no field is filled 	
+	
 
 
-# This is function of take the value from data base and put them in template 
+
+
 def article(request,article_id):
+	""" This is function of take the value from data base and put them in create_article page 
+	    with flag=1 that mean it`s in edit mode"""
 	article=Article.objects.get(pk=article_id)
 	entity_instance=Entity.objects.get(id=article.entity_id_id)
 	article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
 	context={'entity':entity_instance,'article':article_instance,'flag':1}
 	return render(request,'create_article.html',context)
 
-# This is function of editing in the article 	
-#search by id and save in database  fadlha bs eni ab3tlha id k paramaeter 
+
+
+
+
+
+
+	
+
 
 def edit_article(request,article_id):
+	""" This is function of editing in the article"""
+
+
+	# The try and Exception block to handle the exception from no field is filled 
 	try:
-	# The following is to read from templates
-		photo_path=request.POST['article_photo']
+	
+	# The following is to read from create_article page
+		
 		article_title=request.POST['article_title']	
 		article_tag=request.POST['article_tag']
 		article_body=request.POST['article_body']
 		article_date=request.POST['article_date']
 		article_time=request.POST['article_time']
 		entity_type=2
+		
+
 		query_list=request.POST.getlist('publish_article')
 		if 'on' in query_list:
 			article_publish=1
 		else :
 			article_publish=0
 
-	# The following steps to save what we read from templates in database in entity table
+	# The following steps to save what we read from create_article page in database in entity table
 		article=Article.objects.get(pk=article_id)
 		entity_instance=Entity.objects.get(id=article.entity_id_id)
 		entity_instance.entity_date=article_date
@@ -96,11 +128,21 @@ def edit_article(request,article_id):
 		entity_instance.entity_type=entity_type
 		entity_instance.save()
 	
-	# The following steps to save what we read from templates in database in article table	
+
+	# The following steps to save what we read from create_article page in database in article table	
 		article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
+
+
+		# uploading picture to Article
+		form = UploadImageForm(request.POST, request.FILES)
+		if form.is_valid():
+			article_instance.article_photo = form.cleaned_data['image']
+		else:
+			article_instance.article_photo ="noimage.jpg"
+
+        # cont saving parameters in database  
 		article_instance.article_title=article_title
 		article_instance.article_body=article_body
-		article_instance.article_photo=photo_path
 		article_instance.article_published=article_publish
 		article_instance.article_tag=article_tag
 		article_instance.entity_id_id=entity_instance.id
@@ -111,11 +153,15 @@ def edit_article(request,article_id):
 		context={'message':"please enter all fields",'entity':entity_instance,'article':article,'flag':1}
 		return render(request,'create_article.html',context)
 	
-	# The try and Exception block to handle the exception from no field is filled 	
+		
 
 
-# This is function to delete an article 
+
+
+
+
 def delete_article(request,article_id):
+	"""This is function to delete an article """
 	
 	article=Article.objects.get(pk=article_id)
 	article=Article.objects.get(entity_id_id=article.entity_id_id)
@@ -126,8 +172,14 @@ def delete_article(request,article_id):
 	
 
 
-# This function to list articles  limitted by 5 articles "home page"
+
+
+
+
 def home_article(request):
+
+	""" This function to list articles  limitted by 5 articles "home page" """
+
     # select all entites which type=2 that mean it`s article type sorting first by date then by time 
 	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')[:5]
 	#list of articles which saving on it the selected articles
@@ -148,8 +200,14 @@ def home_article(request):
 
 
 
-# This function to list all articles   "Articles page"
+
+
+
+
 def list_articles(request):
+
+	""" This function to list all articles   "Articles page" """
+
 	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
 	#list of articles which saving on it the selected articles
 	articles_list=[]
@@ -168,8 +226,11 @@ def list_articles(request):
 
 
 
-# This function to select article with it`s  "article page"
+
 def open_article(request,article_id):
+
+	"""This function to select article with it`s  "article page" """
+	
 	article_data=get_object_or_404(Article,pk=article_id)
 	entity=Entity.objects.get(id=article_data.entity_id_id)
 	# related tags in article page
@@ -202,9 +263,12 @@ def open_article(request,article_id):
 
 
 
-# This function to list articles to admin page and provide his priveladges "admin page"
-# Sorted by default by published date 
+
+
 def admin_article(request):
+     
+	"""  This function to list articles to admin page and provide his priveladges "admin page"
+               Sorted by default by published date  """
 
 	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
 	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
@@ -228,8 +292,11 @@ def admin_article(request):
 
 
 
-# This function to sort the articles even published or not "admin page"
+
 def sort_published(request):
+
+	"""This function to sort the articles even published or not "admin page" """
+
 	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
 	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
 	# select all articles sorted by it's published or not
@@ -243,8 +310,11 @@ def sort_published(request):
 
 
 
-# This function to increase no of likes when user submit like button "article page"
+
 def like(request,article_id):
+
+	""" This function to increase no of likes when user submit like button "article page" """
+
 	# get article data by it`s id
 	article_data=get_object_or_404(Article,pk=article_id)
 	# get information of this article from parent Entity
@@ -259,8 +329,10 @@ def like(request,article_id):
 
 
 
-# This function to decrease no of likes when user submit unlike button "article page"
+
 def unlike(request,article_id):
+
+	"""This function to decrease no of likes when user submit unlike button "article page" """
 	# get article data by it`s id
 	article_data=get_object_or_404(Article,pk=article_id)
 	# get information of this article from parent Entity

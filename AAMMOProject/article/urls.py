@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'AAMMOProject.views.home', name='home'),
@@ -20,11 +21,10 @@ urlpatterns = [
      url(r'^unlike/(?P<article_id>\d+)/$','article.views.unlike'),
 
      url(r'^open_article/(?P<article_id>\d+)/$','article.views.open_article'),
-
-
+    
      url(r'^insert_article/$','article.views.insert_article'),
 
-	 url(r'^delete_article/(?P<article_id>\d+)/$','article.views.delete_article'),
+      url(r'^delete_article/(?P<article_id>\d+)/$','article.views.delete_article'),
 
 	 url(r'^article/(?P<article_id>\d+)/$','article.views.article'),
 
