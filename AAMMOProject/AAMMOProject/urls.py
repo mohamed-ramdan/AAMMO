@@ -7,4 +7,5 @@ urlpatterns = [
 	#url(r'^captcha/', include('captcha.urls')),
 	url(r'^article/', include('article.urls')),
 	url(r'^users/', include('users.urls')),
+	url('', include('social.apps.django_app.urls', namespace='social')),
 ]

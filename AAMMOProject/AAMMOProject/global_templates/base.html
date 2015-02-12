@@ -19,23 +19,32 @@
 			<p>LOGO HERE</p>
 			<p>COMPANY NAME</p>
 
+			{% if request.session.logged %}
+				<div>
+					<img src = "" alt = "" />
+					<h3>Welcome {{ request.session.username }}!</h3>
+				</div>
+			{% endif %}
+
 			<div id="auth_controls">
 
 				{# The user is already logged in. Display Sign out button #}
 				{% if request.session.logged %}
-
 					{# The logout form #}
 					<form method="POST" action = "/users/logout/">
-						{% csrf_token %}
+
 						<input name="source_path" type = "hidden" value="{{ request.path }}" />
-						<input type="SUBMIT" value="Logout" />
+						<input type="submit" value="Logout" />
+					{% csrf_token %}
 					</form>
 
 				{# The user is not logged in. Display login or registration controls.#}
 				{% else %}
 
 					<form method="POST" action = "/users/login/">
+
 						{% csrf_token %}
+
 						<input name="source_path" type = "hidden" value="{{ request.path }}" />
 
 						<label for = "username">Username: </label>
@@ -44,10 +53,17 @@
 						<label for = "user_password">Password: </label>
 						<input name="user_password" type = "password" />
 
+						<label for = "remember_me">Remember me</label>
+						<input name="remember_me" type = "checkbox" />
+
 						<input type = "submit" value="Login!" />
 					</form>
 
 					<a href="/users/password_recovery">Forgot password?</a>
+
+					<button>Login Using Facebook</button>
+					<button>Sign up!</button>
+					<button>Sign up using Facebook</button>
 
 					{% if request.session.login_failure %}
 

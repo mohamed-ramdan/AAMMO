@@ -11,19 +11,19 @@ class Users(models.Model):
 	user_id = models.AutoField(primary_key=True)
 
 	# The user's facebook id field.
-	user_facebook_id = models.IntegerField(unique=True,null=True)
+	user_facebook_id = models.IntegerField(unique=True, null=True)
 
 	# The user's name field.
-	user_name = models.CharField(unique=True,max_length=100)
+	user_name = models.CharField(unique=True, max_length=100)
 
 	# The user's password field.
 	user_password = models.CharField(max_length=100)
 
 	# The user's email field
-	user_email = models.EmailField(max_length=200)
+	user_email = models.EmailField(max_length=200, unique=True)
 
 	# The path to the user's profile picture. This will be created in the MEDIA_ROOT path folder.
-	user_image_path = models.FileField(upload_to='profile_pics/%Y/%m/%d')
+	user_image_path = models.FileField(upload_to='profile_pics/%Y/%m/%d', null=True)
 
 	# The user's admin status, default => Not an admin
 	user_admin_status = models.BooleanField(default=False)
