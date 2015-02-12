@@ -1,14 +1,26 @@
 <html>
+
+<div class="buttons">
+<form method='post' action='/article/admin_article/'>
+{% csrf_token %}
+<input  onclick='validate()'  type='submit' name='home' value='Home'> 
+</form>
+<form method='post' action='/article/list_articles/'>
+	{% csrf_token %}
+<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+</form>
+
+</div>
+
 {%if flag%}
-<form method='post' action='/article/edit_article/{{article.id}}/'>
+<form method='post' action='/article/edit_article/{{article.id}}/' enctype="multipart/form-data">
 {%else%}
 
-<form method='post' action='/article/insert_article/'>
+<form method='post' action='/article/insert_article/' enctype="multipart/form-data">
 {%endif%}
 {%csrf_token%}
-<div style="height:300px;border:solid;width:400px;float:right"><img src="10734094_10152850590443958_4272049440550589677_n.jpg"></div>
-
-Article photo<br><input type='file' name='article_photo' accept={{article.article_photo}}>
+   <p>
+  <input id="id_image" type="file" class="" name="image">
 <br>
 Article Title<br><input type='text' name='article_title' value={{article.article_title}}>
 <br>
@@ -33,9 +45,6 @@ Article Time<br><input type='time' name='article_time' value={{entity.entity_tim
 <br>
 <input type='submit' name='save_article' value='save' >
 
-<form>
-
-
-
+</form>
 
 </html>

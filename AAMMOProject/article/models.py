@@ -38,7 +38,7 @@ class Article(models.Model):
 	article_body=models.TextField()
 
 	#The photo upload related to article field
-	article_photo=models.CharField(max_length=200)
+	article_photo= models.FileField(upload_to='static/uploads/article_pics/%Y/%m/%d')
 
 	#The article published field (if =1 then published if =0 then not published)
 	article_published=models.IntegerField(default=0)

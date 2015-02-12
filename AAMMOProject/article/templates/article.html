@@ -1,16 +1,28 @@
 
 <!doctype html>
+{% load static %} 
+
 <html>
 	<head>
 		<title>Article page</title>
 	</head>
 	<body>
-			
+			<div class="buttons">
+				<form method='post' action='/article/admin_article/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
+				</form>
+				<form method='post' action='/article/list_articles/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+				</form>
+
+				</div>
 		
 		<p> {{article.article_title}}
 
 		<p>     <div class="articl_photos" style="wdith:50px ;height:50px; border:solid ">
-				<img src="{{article.article_photo}}">
+				<img src="/{{article.article_photo}}" wdith="50px" height="50px" >
 				</div>
 		<p>		
 		<div class="articl" style="wdith:200px ;height:200px; border:solid ">

@@ -1,4 +1,5 @@
 <!doctype html>
+{% load static %}
 	<html>
 		<head>
 			<title>Home</title>
@@ -6,7 +7,17 @@
 		
 		<body>
 
-		
+		<div class="buttons">
+				<form method='post' action='/article/admin_article/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
+				</form>
+				<form method='post' action='/article/list_articles/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+				</form>
+
+				</div>
 		
 		<div>
 		{% if articles %}
@@ -14,7 +25,7 @@
 			{%for article in articles%}
 				<p>
 				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
-				<p><img src="{{article.article_photo}}">
+				<p><img src="/{{article.article_photo}}">
 				<p>
 				    {{article.article_body}} 
 				<br>

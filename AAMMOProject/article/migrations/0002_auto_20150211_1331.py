@@ -7,14 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_auto_20150209_1743'),
+        ('article', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='users',
-            name='user_name',
-            field=models.CharField(unique=True, max_length=100),
-            preserve_default=True,
+            model_name='article',
+            name='article_photo',
+            field=models.FileField(upload_to=b'static/uploads/article_pics/%Y/%m/%d'),
         ),
     ]
