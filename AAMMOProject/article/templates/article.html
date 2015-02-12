@@ -8,10 +8,16 @@
 	</head>
 	<body>
 			<div class="buttons">
+				{% if admin_flag %}
 				<form method='post' action='/article/admin_article/'>
 				{% csrf_token %}
+				{% else %}
+				<form method='post' action='/article/home_article/'>
+				{% csrf_token %}
+				{% endif %}
 				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
 				</form>
+
 				<form method='post' action='/article/list_articles/'>
 				{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
@@ -33,23 +39,33 @@
 	    <p>
 	    {{entity.entity_date}} {{entity.entity_time}}
 
+	    		{% if admin_flag %}
 	    		<form method='post' action='/article/article/{{article.id}}/'>
 	    		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
 				</form>
+
 				<form method='post' action='/article/delete_article/{{article.id}}/'>
 				{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
-		        </form>
-		        <form method='post' action='/article/like/{{article.id}}/'>
-		        {% csrf_token %}
-		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
-		       </form>
-		       No of likes={{entity.no_of_likes}}
+				</form>
+				
+				{% else %}
+				
+		        {%if flag%}
 		       <form method='post' action='/article/unlike/{{article.id}}/'>
 		       {% csrf_token %}
 		        <input  onclick='validate()'  type='submit' name='like' value='Unlike'>
 		       </form>
+		{%else%}
+			<form method='post' action='/article/like/{{article.id}}/'>
+		        {% csrf_token %}
+		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
+		       </form>
+		       
+		       {% endif %}
+			{%endif%}
+No of likes={{entity.no_of_likes}}
 
 		<div>
 			comments there

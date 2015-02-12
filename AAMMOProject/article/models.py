@@ -1,6 +1,6 @@
 from requests import models, models
 from django.db import models
-# from app_name.models import User
+from users.models import Users
 
 
 
@@ -23,7 +23,9 @@ class Entity(models.Model):
 	#The type field to decide article or comment (type=1 then comment else if type=2 then article)
 	entity_type=models.IntegerField(default=0)
 
-	#author_id=models.ForeignKey(User)
+	# The author_id field related to admin that created the article
+	author_id=models.ForeignKey(Users)
+
 
 
 class Article(models.Model):
@@ -51,4 +53,13 @@ class Article(models.Model):
 
 
 
+class Likes(models.Model):
+
+	""" This is Likes to entity model .
+	    that contain information about the user that like the entity(article/comment)"""
+
+	# user_like_id field related to users
+	user_like_id=models.ForeignKey(Users)
+	# entity_like_id field related to entity(article/comment)
+	entity_like_id=models.ForeignKey(Entity)
 
