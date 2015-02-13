@@ -20,7 +20,9 @@
 
 			{% if request.session.logged %}
 				<div>
-					<img src = "{% static request.session.user_image %}" />
+					{% if request.session.user_image %}
+						<img src = "{% static request.session.user_image %}" />
+					{% endif %}
 					<h3>Welcome {{ request.session.username }}!</h3>
 				</div>
 			{% endif %}
