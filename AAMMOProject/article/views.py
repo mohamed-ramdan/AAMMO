@@ -43,12 +43,19 @@ def insert_article(request):
 		else :
 			article_publish=0
 
+
+
+	# to get user 
+		username=request.session['username']
+		check_user=Users.objects.get(user_name=username)
+
+
 	# The following steps to sava from create_article page in database in entity table
 		entity_instance=Entity()
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
-		entity_instance.author_id_id=1
+		entity_instance.author_id_id=check_user.user_id
 		entity_instance.save()
 
 	except Exception,e:
@@ -181,9 +188,11 @@ def delete_article(request,article_id):
 def check(request):
 	""" This is a function to check whether login person is admin or user """
 	
-	# Take id of login person
-	check_user=Users.objects.get(pk=1)
-
+	# to get user 
+	username=request.session['username']
+	check_user=Users.objects.get(user_name=username)
+	
+	
 	# Check by attribute admin status 
 	if check_user.user_admin_status:
 
@@ -243,9 +252,10 @@ def list_articles(request):
 
 
 	# to check this user is admin or user
-	user_data=get_object_or_404(Users,pk=1)
+	username=request.session['username']
+	user=Users.objects.get(user_name=username)
 	# check for admin status 
-	if user_data.user_admin_status:
+	if user.user_admin_status:
 		# admin flag =1 that mean this user is admin
 		admin_flag=1
 	else:
@@ -294,9 +304,11 @@ def open_article(request,article_id):
 	
 
 	# to check this user is admin or user
-	user_data=get_object_or_404(Users,pk=1)
+	username=request.session['username']
+	user=Users.objects.get(user_name=username)
+	
 	# check for admin status 
-	if user_data.user_admin_status:
+	if user.user_admin_status:
 		# admin flag =1 that mean this user is admin
 		admin_flag=1
 	else:
@@ -392,9 +404,14 @@ def like(request,article_id):
 	entity.no_of_likes+=1
 	# saving in database
 	entity.save()
+
+	# to get user id
+	username=request.session['username']
+	user=Users.objects.get(user_name=username)
+
 	# saving that user likes this article
 	like=Likes()
-	like.user_like_id_id=2
+	like.user_like_id_id=user.user_id
 	like.entity_like_id_id=article_data.entity_id_id
 	like.save()
 	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/") 
@@ -418,13 +435,18 @@ def unlike(request,article_id):
 		entity.no_of_likes-=1
 	# saving in database
 	entity.save()
+
+	# to get user id
+	username=request.session['username']
+	user=Users.objects.get(user_name=username)
+
 	# to delete the like of the user on the related article
 	all_user=Likes.objects.all()
 
 	# for loop to get every user with it`s article
 	for current_user in all_user:
 		#check if this user in table of likes or not
-		if current_user.user_like_id_id==2:
+		if current_user.user_like_id_id==user.user_id:
 			# if current user likes this article or not
 			if current_user.entity_like_id_id==article_data.entity_id_id:
 				# delete his like
