@@ -5,42 +5,53 @@ from comments.models import Comment
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
+
 def list_comments(request):
 	""" This function to list all comments with it`s replies on the same article """
 
-	#select all comments with type=1 which mean that is comments sorted by date and time 
-	entities = Entity.objects.filter(entity_type=1).order_by('-entity_date', '-entity_time')
-	#list of comments which saving on it the selected comments
-	article_comments_replies_sorted=[]
-	# 2 mtched to article_id
-	# get all comments and replies of specified article
-	article_comments_replies=Comment.objects.filter(article_id_id=2)
-	# seprate comments and replies
-	for article_comment_reply in article_comments_replies:
-		if article_comment_reply.comment_id_id:
-			
+	article_id = "whatever"
 
+	# DFS the comment tree of the given article id.
+	traverse_comments(article_id)
 
+	# (element-->comment,depth,author,date,time,num_of_likes)
+	elements =[] # NODES GLOBAL
 
+	context = {
+		'comments': elements,
+	}
 
-
-	# to sort all comments and replies of specified article
-	# for loop that make inner join 
-	#get all comments sorted which the forienkey entity_id in comment class equal to id of entity class
-	for instance  in entities:
-		comment=Comment.objects.get(entity_id=instance.id ,comment_id_id__isnull=True)
-		#append the comment in list of comments
-		comments_list.append(comment)
-
-#saving entities and comments in dictionary list to render to index.html
-	context={'entities': entities,'comments':comments_list}
 	return render(request,'comments.html',context)
 
 
+def get_children_nodes(element_id):
+	"""
+	This function gets the children of the given element id
+	:param node_id:
+	:return:
+	"""
 
 
-# To goto the page of comemnt to insert comment
+def traverse_comments(element_id):
+	depth = 0 # WILL BE REMOVED
+	elements = [] # WILL BE REMOVED
+	depth += 1
+	children_elements = get_children_nodes(element_id)
 
+	if not children_elements:
+		depth -= 1
+	else:
+		for element in children_elements:
+
+			elements.append(
+				{
+					'comment': element,
+					'depth': depth
+				}
+			)
+
+			traverse_comments(element.entity_id)
+		depth-=1
 
 def create_comment(request):
 	return render(request,'insert_comment.html')

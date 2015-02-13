@@ -5,28 +5,20 @@
 
 {% if comments %}
 
-			{%for comment in comments%}
+			{%for comment_tuple in comments%}
 				
-				<p>
-				    {{comment.comment_text}} 
+				<p style="margin-left: {{ comment_tuple.depth }}*10px;">
+					{# This is the comment ITSELF #}
+				    {{comment_tuple.comment }}
+					{{comment_tuple.author }}
+					{{comment_tuple.date }}
+					{{comment_tuple.time }}
 				<br>
-				
-				{% for entity in entities %}
 
-
-					{% if entity.id == comment.entity_id_id %}
-
-	                  {{entity.entity_date}}  {{entity.entity_time}}
-					
-					{% endif %}
-					
-				{% endfor%}
-
-			{% endfor %}
 
         {% else %}
 		
-                <p>No Commentss </p>
+                <p>No Comments </p>
 		
 		{% endif %}
 
