@@ -1,19 +1,34 @@
-<<<<<<< HEAD
 
-
-=======
 <!doctype html>
+{% load static %} 
+
 <html>
 	<head>
 		<title>Article page</title>
 	</head>
 	<body>
-			
+			<div class="buttons">
+				{% if admin_flag %}
+				<form method='post' action='/article/admin_article/'>
+				{% csrf_token %}
+				{% else %}
+				<form method='post' action='/article/home_article/'>
+				{% csrf_token %}
+				{% endif %}
+				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
+				</form>
+
+				<form method='post' action='/article/list_articles/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+				</form>
+
+				</div>
 		
 		<p> {{article.article_title}}
 
 		<p>     <div class="articl_photos" style="wdith:50px ;height:50px; border:solid ">
-				<img src="{{article.article_photo}}">
+				<img src="/{{article.article_photo}}" wdith="50px" height="50px" >
 				</div>
 		<p>		
 		<div class="articl" style="wdith:200px ;height:200px; border:solid ">
@@ -24,30 +39,40 @@
 	    <p>
 	    {{entity.entity_date}} {{entity.entity_time}}
 
-	    		<form method='post' action=''>
+	    		{% if admin_flag %}
+	    		<form method='post' action='/article/article/{{article.entity_id_id}}/'>
 	    		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
 				</form>
-				<form method='post' action=''>
+
+				<form method='post' action='/article/delete_article/{{article.entity_id_id}}/'>
 				{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
-		        </form>
-		        <form method='post' action='/article/like/{{article.id}}/'>
-		        {% csrf_token %}
-		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
-		       </form>
-		       No of likes={{entity.no_of_likes}}
-		       <form method='post' action='/article/unlike/{{article.id}}/'>
+				</form>
+				
+				{% else %}
+				
+		        {%if flag%}
+		       <form method='post' action='/article/unlike/{{article.entity_id_id}}/'>
 		       {% csrf_token %}
 		        <input  onclick='validate()'  type='submit' name='like' value='Unlike'>
 		       </form>
+		{%else%}
+			<form method='post' action='/article/like/{{article.entity_id_id}}/'>
+		        {% csrf_token %}
+		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
+		       </form>
+		       
+		       {% endif %}
+			{%endif%}
+No of likes={{entity.no_of_likes}}
 
 		<div>
 			comments there
 		</div>
 		<div class="articl" style="wdith:100px ;height:100px; border:solid ">
 				{%for onetag in tag%}
-		               <a href= "aya">{{onetag.article_title}}</a>
+		               <a href= '/article/open_article/{{onetag.id}}'>{{onetag.article_title}}</a>
 		               <br>
                                {%endfor%}
 	    </div>

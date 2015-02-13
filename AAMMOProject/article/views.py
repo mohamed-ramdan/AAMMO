@@ -88,12 +88,12 @@ def insert_article(request):
 
 
 
-def article(request,article_id):
+def article(request,entity_id):
 	""" This is function of take the value from data base and put them in create_article page 
 	    with flag=1 that mean it`s in edit mode"""
-	article=Article.objects.get(pk=article_id)
-	entity_instance=Entity.objects.get(id=article.entity_id_id)
-	article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
+	
+	entity_instance=Entity.objects.get(id=entity_id)
+	article_instance=Article.objects.get(entity_id_id=entity_id)
 	context={'entity':entity_instance,'article':article_instance,'flag':1}
 	return render(request,'create_article.html',context)
 
@@ -106,7 +106,7 @@ def article(request,article_id):
 	
 
 
-def edit_article(request,article_id):
+def edit_article(request,entity_id):
 	""" This is function of editing in the article"""
 
 
@@ -130,8 +130,8 @@ def edit_article(request,article_id):
 			article_publish=0
 
 	# The following steps to save what we read from create_article page in database in entity table
-		article=Article.objects.get(pk=article_id)
-		entity_instance=Entity.objects.get(id=article.entity_id_id)
+		
+		entity_instance=Entity.objects.get(id=entity_id)
 		entity_instance.entity_date=article_date
 		entity_instance.entity_time=article_time
 		entity_instance.entity_type=entity_type
@@ -139,7 +139,7 @@ def edit_article(request,article_id):
 	
 
 	# The following steps to save what we read from create_article page in database in article table	
-		article_instance=Article.objects.get(entity_id_id=article.entity_id_id)
+		article_instance=Article.objects.get(entity_id_id=entity_id)
 
 
 		# uploading picture to Article
@@ -157,7 +157,7 @@ def edit_article(request,article_id):
 		article_instance.entity_id_id=entity_instance.id
 		article_instance.save()
 	
-		return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/") 
+		return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(entity_id)+"/") 
 	except:
 		context={'message':"please enter all fields",'entity':entity_instance,'article':article,'flag':1}
 		return render(request,'create_article.html',context)
@@ -169,13 +169,13 @@ def edit_article(request,article_id):
 
 
 
-def delete_article(request,article_id):
+def delete_article(request,entity_id):
 	"""This is function to delete an article """
 	
-	article=Article.objects.get(pk=article_id)
-	article=Article.objects.get(entity_id_id=article.entity_id_id)
+	
+	article=Article.objects.get(entity_id_id=entity_id)
 	article.delete()
-	instance = Entity.objects.get(id=article.entity_id_id)
+	instance = Entity.objects.get(id=entity_id)
 	instance.delete()
 	return HttpResponseRedirect("http://127.0.0.1:8000/article/admin_article/") 
 	
@@ -254,6 +254,7 @@ def list_articles(request):
 	# to check this user is admin or user
 	username=request.session['username']
 	user=Users.objects.get(user_name=username)
+	
 	# check for admin status 
 	if user.user_admin_status:
 		# admin flag =1 that mean this user is admin
@@ -270,16 +271,16 @@ def list_articles(request):
 
 
 
-def open_article(request,article_id):
+def open_article(request,entity_id):
 
 	"""This function to select article with it`s  "article page" """
 	
-	article_data=get_object_or_404(Article,pk=article_id)
-	entity=Entity.objects.get(id=article_data.entity_id_id)
+	article_data=get_object_or_404(Article,entity_id=entity_id)
+	entity=Entity.objects.get(id=entity_id)
 	# related tags in article page
 	list1=[]
 	# This line to get current Article by id
-	article=Article.objects.get(entity_id=article_data.entity_id_id)
+	article=Article.objects.get(entity_id=entity_id)
 	
 
 
@@ -328,7 +329,7 @@ def open_article(request,article_id):
 	# for loop to get every user with it`s article
 	for current_user in all_user:
 		#check if user in table of likes or not
-		if current_user.user_like_id_id==2:
+		if current_user.user_like_id_id==3:
 			# if current user likes this article or not
 			if current_user.entity_like_id_id==article_data.entity_id_id:
 				#flag=1 mean unlike button is visible
@@ -393,14 +394,14 @@ def sort_published(request):
 
 
 
-def like(request,article_id):
+def like(request,entity_id):
 
 	""" This function to increase no of likes when user submit like button "article page" """
 
 	# get article data by it`s id
-	article_data=get_object_or_404(Article,pk=article_id)
+	article_data=get_object_or_404(Article,entity_id_id=entity_id)
 	# get information of this article from parent Entity
-	entity=Entity.objects.get(id=article_data.entity_id_id)
+	entity=Entity.objects.get(id=entity_id)
 	entity.no_of_likes+=1
 	# saving in database
 	entity.save()
@@ -412,9 +413,9 @@ def like(request,article_id):
 	# saving that user likes this article
 	like=Likes()
 	like.user_like_id_id=user.user_id
-	like.entity_like_id_id=article_data.entity_id_id
+	like.entity_like_id_id=entity_id
 	like.save()
-	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/") 
+	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(entity_id)+"/") 
 
 
 
@@ -422,13 +423,13 @@ def like(request,article_id):
 
 
 
-def unlike(request,article_id):
+def unlike(request,entity_id):
 
 	"""This function to decrease no of likes when user submit unlike button "article page" """
 	# get article data by it`s id
-	article_data=get_object_or_404(Article,pk=article_id)
+	article_data=get_object_or_404(Article,entity_id_id=entity_id)
 	# get information of this article from parent Entity
-	entity=Entity.objects.get(id=article_data.entity_id_id)
+	entity=Entity.objects.get(id=entity_id)
 	if entity.no_of_likes <= 0: 
 		entity.no_of_likes=0
 	else:
@@ -452,7 +453,7 @@ def unlike(request,article_id):
 				# delete his like
 				current_user.delete()
 
-	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(article_id)+"/")
+	return HttpResponseRedirect("http://127.0.0.1:8000/article/open_article/"+str(entity_id)+"/")
 	
 
 

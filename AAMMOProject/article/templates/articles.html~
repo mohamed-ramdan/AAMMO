@@ -29,7 +29,7 @@
 
 			{%for article in articles%}
 				<p>
-				<a href='/article/open_article/{{article.entity_id_id}}' > {{article.article_title}}</a>
+				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
 				<p><img src="/{{article.article_photo}}">
 				<p>
 				    {{article.article_body}} 

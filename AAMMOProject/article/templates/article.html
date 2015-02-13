@@ -40,12 +40,12 @@
 	    {{entity.entity_date}} {{entity.entity_time}}
 
 	    		{% if admin_flag %}
-	    		<form method='post' action='/article/article/{{article.id}}/'>
+	    		<form method='post' action='/article/article/{{article.entity_id_id}}/'>
 	    		{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
 				</form>
 
-				<form method='post' action='/article/delete_article/{{article.id}}/'>
+				<form method='post' action='/article/delete_article/{{article.entity_id_id}}/'>
 				{% csrf_token %}
 				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
 				</form>
@@ -53,12 +53,12 @@
 				{% else %}
 				
 		        {%if flag%}
-		       <form method='post' action='/article/unlike/{{article.id}}/'>
+		       <form method='post' action='/article/unlike/{{article.entity_id_id}}/'>
 		       {% csrf_token %}
 		        <input  onclick='validate()'  type='submit' name='like' value='Unlike'>
 		       </form>
 		{%else%}
-			<form method='post' action='/article/like/{{article.id}}/'>
+			<form method='post' action='/article/like/{{article.entity_id_id}}/'>
 		        {% csrf_token %}
 		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
 		       </form>
