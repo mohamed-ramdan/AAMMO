@@ -24,20 +24,21 @@ class Users(models.Model):
 	user_email = models.EmailField(max_length=255, unique=True)
 
 	# The path to the user's profile picture. This will be created in the MEDIA_ROOT path folder.
-	user_image_path = models.FileField(upload_to='  profile_pics/%Y/%m/%d', null=True)
+	user_image_path = models.FileField(upload_to='profile_pics/%Y/%m/%d', null=True)
 
 	# The user's admin status, default => Not an admin
 	user_admin_status = models.BooleanField(default=False)
 
-	# def save(self):
-	# 	"""
-	# 	Save photo. Resize as needed.
-	# 	:return:
-	# 	"""
-	# 	super(Users, self).save()
-	#
-	# 	image_filename = self.get_source_filename()
-	# 	new_image = Image.open(image_filename)
-	#
-	# 	new_image.thumbnail((200,200), Image.ANTIALIAS)
-	# 	new_image.save(image_filename)
+	def save(self):
+		"""
+		Override the model's save function to resize the photo to 100x100 first.
+		:return:
+		"""
+		super(Users, self).save()
+
+		if self.user_image_path:
+			image_path = str(self.user_image_path.path)
+			image_object = Image.open(image_path)
+
+			image_object.thumbnail((100, 100), Image.ANTIALIAS)
+			image_object.save(image_path)

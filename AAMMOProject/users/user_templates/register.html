@@ -18,10 +18,19 @@
 
 			{{ register_form }}
 
+			{% if user_image %}
+				<img src="{{ user_image }}">
+			{% endif %}
+
 			<input type = "submit" value="Submit!" />
 
 		</form>
-		<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Sign Up using Facebook</a>
+		{% if not user_image %}
+			<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Sign Up using Facebook</a>
+		{% endif %}
+		{% if user_image %}
+			<a href="/users/logout/?source_path={{ request.path }}">Disconnect from Facebook</a>
+		{% endif %}
 
 	{# The user is already logged in. Display a message telling him that. #}
 	{% else %}

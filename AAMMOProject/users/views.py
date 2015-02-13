@@ -1,4 +1,5 @@
 from PIL import Image
+import os
 import random
 import urllib2
 import StringIO
@@ -11,6 +12,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
 from django.http.response import Http404
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 from social.apps.django_app.default.models import UserSocialAuth
 
 from AAMMOProject import settings
@@ -30,6 +32,13 @@ def register(request):
 	route_url = 'register.html'
 	# The default context is empty. Nothing should be sent if the user doesn't need the registration form.
 	context = {}
+	# Defaults for facebook image upload. image_request_url defines a default value for the facebook image a false
+	# until it is actually used. That is because the sign up, img and disconnect tags in the template check for its
+	# existence to be displayed or not.
+	image_request_url = False
+	# The facebook image used is a flag that is true or false whether the user is going to use the facebook image or
+	# not. If he will, the database doesn't store the selected file from the file chooser.
+	facebook_image_used = False
 
 	# If the user is not logged in.
 	if 'logged' not in request.session:
@@ -37,26 +46,41 @@ def register(request):
 		# not just navigated to it.
 		if request.method == 'POST':
 
-			# Create the registration form object with the received data and files.
-			registration_form = RegisterForm(request.POST, request.FILES)
+			# If a facebook user was defined, then make sure that the profile picture is loaded by sending its link
+			# to the context to the view page to preview it. Note that if the user selected another file,
+			# it takes precedence over it.
+			if request.user and not request.user.is_anonymous():
+				facebook_id = UserSocialAuth.objects.get(id=request.user.id).uid
+				image_request_url = 'http://graph.facebook.com/'+facebook_id+'/picture?type=large'
+
+			# If the user didn't choose a file from the for file chooser create a form with post data only.
+			if 'user_image' not in request.FILES:
+				# Create the registration form object with the received data only.
+				registration_form = RegisterForm(request.POST)
+				facebook_image_used = True
+			else:
+				# Create the registration form object with the received data and files.
+				registration_form = RegisterForm(request.POST, request.FILES)
 
 			# The is_valid() method validates the fields of the form and returns true if they are all validated
 			# correctly. It also passes the form parameters (fields) into a dictionary called cleaned_data, which you can
 			# use for additional validation.
-			if registration_form.is_valid() and registration_form.clean_user_password_confirm() and \
-				registration_form.clean_user_image() and registration_form.clean_user_image() and \
-				registration_form.clean_user_email():
+			if registration_form.is_valid():
 
 					# SUCCESSFUL LOGIN
 					# Create new user based on the received data and save that user to the database.
-					new_user = create_user(request.POST, request.FILES)
+					if facebook_image_used:
+						new_user = create_user(request.POST, image_request_url)
+					else:
+						new_user = create_user(request.POST, request.FILES)
 
 					# Set the logged session variable to true to indicate that the user is logged in.
 					request.session['logged'] = True
 					# Set the logged user name to the logged in username.
 					request.session['username'] = new_user.user_name
-					# Set the logged user profile picture path.
-					request.session['user_image'] = str(new_user.user_image_path)
+					# Set the logged user profile picture path if available
+					if new_user.user_image_path:
+						request.session['user_image'] = str(new_user.user_image_path)
 
 					# Format: subject,body,host to use,recipients,fail_silently
 					send_mail(
@@ -105,6 +129,7 @@ def register(request):
 		# The registration form data to the register page.
 		context = {
 			'register_form': registration_form,
+			'user_image': image_request_url
 		}
 
 	# This displays the register page again with the defined context.
@@ -202,7 +227,7 @@ def login_facebook(request):
 			# Set the logged user name to the logged in username.
 			request.session['username'] = logged_user.user_name
 			# Set the logged user profile picture path.
-			request.session['user_image'] = logged_user.user_image_path
+			request.session['user_image'] = str(logged_user.user_image_path)
 
 		# The user doesn't exist in the first place. Redirect to the registration page.
 		except Users.DoesNotExist:
@@ -226,12 +251,17 @@ def logout(request):
 	:return: Returns the same page the user was in but without being logged on.
 	"""
 
-	if 'source_path' not in request.POST:
+	# Makes sure that the logout was performed from logout press or from the disconnect Facebook link.
+	if 'source_path' not in request.POST and 'source_path' not in request.GET:
 		source_path = '/index/'
 		response = redirect(source_path)
 	else:
+
 		# Get source page path for redirect
-		source_path = request.POST['source_path']
+		try:
+			source_path = request.POST['source_path']
+		except MultiValueDictKeyError:
+			source_path = request.GET['source_path']
 
 		# Logout from the social backend, which simply clears all session variables.
 		django.contrib.auth.logout(request)
@@ -319,6 +349,9 @@ def edit(request):
 	# Default context
 	context = {}
 
+	if 'logged' not in request.session:
+		return redirect('/index/')
+
 	# The user has filled the form itself.
 	if request.method == 'POST':
 
@@ -333,11 +366,12 @@ def edit(request):
 			current_user = Users.objects.get(user_name=current_user_name)
 
 			# Update the user's name if it was filled in the fields.
-			if 'user_name' in request.POST:
+			if 'user_name' in request.POST and request.POST['user_name'] != "":
 				current_user.user_name = request.POST['user_name']
+				request.session['username'] = request.POST['user_name']
 
 			# Update the user's email if it was filled in the fields.
-			if 'user_email' in request.POST:
+			if 'user_email' in request.POST and request.POST['user_email'] != "":
 				current_user.user_email = request.POST['user_email']
 
 			# Update the user's profile pic if it was filled in the fields.
@@ -354,8 +388,16 @@ def edit(request):
 				# Assign the modified image to the current user image path.
 				current_user.user_image_path = user_image
 
+				# A flag that indicates that the image has been altered.
+				changed_image = True
+
 			# Save updates to the current user.
 			current_user.save()
+
+			# The image has changed, I needed to have saved the object first to get the true URL for the image
+			if changed_image:
+				# Save the current profile picture in the session variable.
+				request.session['user_image'] = str(current_user.user_image_path)
 
 			context = {
 				'edit_status': True
@@ -393,20 +435,33 @@ def create_user(uploaded_data, uploaded_image):
 	# Save the user data without the image to get the user id.
 	new_user.save()
 
-	# Get the just saved user id.
-	new_user = Users.objects.get(user_name=uploaded_data['user_name'])
+	# Get the just uploaded image if it exists.
+	if 'user_image' in uploaded_image:
+		user_image = uploaded_image['user_image']
 
-	# Get the just uploaded image.
-	user_image = uploaded_image['user_image']
+		# Get the image's extension
+		image_extension = user_image.name.split('.')[1]
 
-	# Get the image's extension
-	image_extension = user_image.name.split('.')[1]
+		# Assign the image a new name, with p_user_id as its name.
+		user_image.name = 'p_' + str(new_user.user_id) + '.' + image_extension
 
-	# Assign the image a new name, with p_user_id as its name.
-	user_image.name = 'p_' + str(new_user.user_id) + '.' + image_extension
+		# Assign the user the renamed image and save it in the database.
+		new_user.user_image_path = user_image
+		new_user.save()
 
-	# Assign the user the renamed image and save it in the database.
-	new_user.user_image_path = user_image
-	new_user.save()
+	# If the uploaded image is a url to the image to download from facebook.
+	elif uploaded_image:
+		# Fetch the image from the remote URL.
+		fetched_image = urllib2.urlopen(uploaded_image).read()
+		# Create temporary file to download image.
+		fetched_image_file = NamedTemporaryFile(delete=True)
+		# Write the fetched image's data in the temporary file.
+		fetched_image_file.write(fetched_image)
+		# Flush the written data to the file.
+		fetched_image_file.flush()
+		# Create the file's name.
+		fetched_image_path = 'p_' + str(new_user.user_id) + '.' + 'jpg'
+		# Save the image path. Arguments: path, image file, save boolean
+		new_user.user_image_path.save(fetched_image_path, ImageFile(fetched_image_file), save=True)
 
 	return new_user

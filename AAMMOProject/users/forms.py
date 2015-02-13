@@ -41,7 +41,8 @@ class RegisterForm(forms.Form):
 	# The image selection field for the login form.
 	user_image = forms.ImageField(
 		label="Choose your profile picture",
-		help_text="Maximum: 4 Mb"
+		help_text="Maximum: 4 Mb",
+		required=False
 	)
 
 	# Create captcha field.
@@ -85,7 +86,7 @@ class RegisterForm(forms.Form):
 			else:
 				return image
 		else:
-			raise forms.ValidationError("Could not read uploaded image! Type not supported!")
+			return image
 
 	def clean_user_name(self):
 		"""
@@ -142,20 +143,23 @@ class EditForm(forms.Form):
 	user_name = forms.CharField(
 		label="Enter user name",
 		max_length=100,
-		widget=forms.TextInput(attrs={'placeholder': 'Enter username here ...'})
+		widget=forms.TextInput(attrs={'placeholder': 'Enter username here ...'}),
+		required=False
 	)
 
 	# The email field for the login form.
 	user_email = forms.EmailField(
 		label="Enter your email",
 		max_length=200,
-		widget=forms.EmailInput(attrs={'placeholder': 'Enter email here ...'})
+		widget=forms.EmailInput(attrs={'placeholder': 'Enter email here ...'}),
+		required=False
 	)
 
 	# The image selection field for the login form.
 	user_image = forms.ImageField(
 		label="Choose your profile picture",
-		help_text="Maximum: 4 Mb"
+		help_text="Maximum: 4 Mb",
+		required=False
 	)
 
 
