@@ -1,82 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
 
-<!doctype html>
-{% load static %} 
+{% block title %}
+	{{ article.article_title }}
+{% endblock %}
 
-<html>
-	<head>
-		<title>Article page</title>
-	</head>
-	<body>
-			<div class="buttons">
-				{% if admin_flag %}
-				<form method='post' action='/article/admin_article/'>
-				{% csrf_token %}
-				{% else %}
-				<form method='post' action='/article/home_article/'>
-				{% csrf_token %}
-				{% endif %}
-				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
-				</form>
+{% block body %}
 
-				<form method='post' action='/article/list_articles/'>
-				{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
-				</form>
+	<h2>{{ article.article_title }}</h2>
+	<div class = "article_photos" style = "width:50px ;height:50px; border:solid ">
+		<img src = "{% static article.article_photo %}" width = "50px" height = "50px">
+	</div>
 
-				</div>
-		
-		<p> {{article.article_title}}
+	<div class = "article" style = "border:solid;">
+		{{ article.article_body }}
+	</div>
 
-		<p>     <div class="articl_photos" style="wdith:50px ;height:50px; border:solid ">
-				<img src="/{{article.article_photo}}" wdith="50px" height="50px" >
-				</div>
-		<p>		
-		<div class="articl" style="wdith:200px ;height:200px; border:solid ">
-		{{article.article_body}}
+	{{ entity.entity_date }} {{ entity.entity_time }}
 
+	{% if request.session.is_admin %}
+		<a href = "/article/article/{{ article.id }}/">Edit Article</a>
+		<a href = "/article/delete_article/{{ article.id }}/">Delete Article</a>
+	{% else %}
 
-	    </div>
-	    <p>
-	    {{entity.entity_date}} {{entity.entity_time}}
+		{% if like_hidden %}
+			<a href = "/article/unlike/{{ article.id }}/">Unlike</a>
+		{% else %}
+			<a href = "/article/like/{{ article.id }}/">Like</a>
+		{% endif %}
+	{% endif %}
+	No of likes= {{ entity.no_of_likes }}
 
-	    		{% if admin_flag %}
-	    		<form method='post' action='/article/article/{{article.id}}/'>
-	    		{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='edit' value='Edit'> 
-				</form>
+	<div>
+		Comments HERE
+	</div>
 
-				<form method='post' action='/article/delete_article/{{article.id}}/'>
-				{% csrf_token %}
-				<input  onclick='validate()'  type='submit' name='delete' value='Delete'>
-				</form>
-				
-				{% else %}
-				
-		        {%if flag%}
-		       <form method='post' action='/article/unlike/{{article.id}}/'>
-		       {% csrf_token %}
-		        <input  onclick='validate()'  type='submit' name='like' value='Unlike'>
-		       </form>
-		{%else%}
-			<form method='post' action='/article/like/{{article.id}}/'>
-		        {% csrf_token %}
-		        <input  onclick='validate()'  type='submit' name='like' value='Like'>
-		       </form>
-		       
-		       {% endif %}
-			{%endif%}
-No of likes={{entity.no_of_likes}}
+	<div class = "article" style = "width:100px ;height:100px; border:solid; ">
+		{% for onetag in tag %}
+			<a href = '/article/open_article/{{ onetag.id }}/'>{{ onetag.article_title }}</a>
+		{% endfor %}
+	</div>
 
-		<div>
-			comments there
-		</div>
-		<div class="articl" style="wdith:100px ;height:100px; border:solid ">
-				{%for onetag in tag%}
-		               <a href= '/article/open_article/{{onetag.id}}'>{{onetag.article_title}}</a>
-		               <br>
-                               {%endfor%}
-	    </div>
-
-	</body>
-</html>
-
+{% endblock %}

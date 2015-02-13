@@ -1,50 +1,52 @@
-<html>
+{% extends 'base.html' %}
+{% load staticfiles %}
 
-<div class="buttons">
-<form method='post' action='/article/admin_article/'>
-{% csrf_token %}
-<input  onclick='validate()'  type='submit' name='home' value='Home'> 
-</form>
-<form method='post' action='/article/list_articles/'>
+{% block title %}
+	Create New Article
+{% endblock %}
+
+{% block body %}
+	{% if edit_mode %}
+		<form method = 'post' action = '/article/edit_article/{{ article.id }}/' enctype = "multipart/form-data">
+	{% else %}
+		<form method = 'post' action = '/article/insert_article/' enctype = "multipart/form-data">
+	{% endif %}
+
 	{% csrf_token %}
-<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+	<label for = "image">Choose Article Header Image</label>
+	<input id = "id_image" type = "file" class = "" name = "image">
+
+	<label for = "article_title">Article Title</label>
+	<input type = 'text' name = 'article_title' value ={{ article.article_title }}>
+
+	<label for = "article_tag">Article Tag</label>
+	<input type = 'text' name = 'article_tag' value ={{ article.article_tag }}>
+
+	<label for = "article_body">Article Text</label>
+	<textarea rows = "10" cols = "80" name = 'article_body'>{{ article.article_body }}</textarea>
+
+	<label for = "article_date">Article Date</label>
+	<input type = 'date' name = 'article_date' value ={{ entity.entity_date }}>
+
+	<label for = "article_time">Article Time</label>
+	<input type = 'time' name = 'article_time' value ={{ entity.entity_time }}>
+
+	<label for = "publish_article">Publish Article</label>
+	{% if article.article_published %}
+		<input type = 'checkbox' name = 'publish_article' checked>
+	{% else %}
+		<input type = 'checkbox' name = 'publish_article'>
+	{% endif %}
+
+	{% if message %}
+		{{ message }}
+	{% endif %}
+
+	{% if edit_mode %}
+		<input type = 'submit' name = 'save_article' value = 'Submit Article Changes'>
+	{% else %}
+		<input type = 'submit' name = 'save_article' value = 'Create New Article'>
+	{% endif %}
 </form>
 
-</div>
-
-{%if flag%}
-<form method='post' action='/article/edit_article/{{article.id}}/' enctype="multipart/form-data">
-{%else%}
-
-<form method='post' action='/article/insert_article/' enctype="multipart/form-data">
-{%endif%}
-{%csrf_token%}
-   <p>
-  <input id="id_image" type="file" class="" name="image">
-<br>
-Article Title<br><input type='text' name='article_title' value={{article.article_title}}>
-<br>
-
-Article Tag<br><input type='text' name='article_tag' value={{article.article_tag}}>
-<br>
-Article Description<br><textarea rows="10" cols="80" name='article_body' >{{article.article_body}}</textarea>
-
-<br>
-Article Date<br><input type='date' name='article_date' value={{entity.entity_date}}>
-<br>
-Article Time<br><input type='time' name='article_time' value={{entity.entity_time}}>
-{%if article.article_published%}
-<br><input type='checkbox' name='publish_article' checked>Publish Artcile
-{%else%}
-<br><input type='checkbox' name='publish_article' >Publish Artcile
-{%endif%}
-{% if message%}
-<br>
-{{message}}
-{% endif %}
-<br>
-<input type='submit' name='save_article' value='save' >
-
-</form>
-
-</html>
+{% endblock %}

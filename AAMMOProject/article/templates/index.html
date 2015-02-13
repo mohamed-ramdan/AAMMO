@@ -1,76 +1,44 @@
-<!doctype html>
-{% load static %} 
-<html>
-    <head>
-        <title>Home</title>
-    </head>
+{% extends 'base.html' %}
+{% load staticfiles %}
 
-    <body>
+{% block title %}
+	Homepage
+{% endblock %}
 
+{% block body %}
 
-        <div class="header" >
-            <div class="buttons">
-                <form method='post' action='/article/home_article/'>
-                    {% csrf_token %}
-                    <input  onclick='validate()'  type='submit' name='home' value='Home'> 
-                </form>
-                <form method='post' action='/article/list_articles/'>
-                    {% csrf_token %}
-                    <input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
-                </form>
+{# REPLACE WITH CAROUSEL #}
+<div class="header" >
+    <div class="article_photos" style="width:100px ;height:100px; border:solid ">
+        {%for article in articles%}
+            <img src="{% static article.article_photo %}" width="100px" height="100px">
+        {% endfor %}
+    </div>
+</div>
 
-            </div>
-
-            <div class="articl_photos" style="wdith:100px ;height:100px; border:solid ">
-                {%for article in articles%}
-                
-                <img src="/{{article.article_photo}}" width="100px" height="100px">
-                {% endfor %}
-
-            </div>
-            <form method='post' action=''>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='next' value='next'> 
-            </form>
-            <form method='post' action=''>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='prev' value='prev'>
-            </form> 
-        </div>
-
-        <div>
-            {% if articles %}
-
-            {%for article in articles%}
+<div>
+	{% if articles %}
+		{%for article in articles%}
             <p>
-                <a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
-            <p><img src="/{{article.article_photo}}">
+                <a href='/article/open_article/{{article.id}}/' > {{article.article_title}}</a>
+			</p>
+
             <p>
-                {{article.article_body}} 
-                <br>
+	            <img src="{% static article.article_photo %}">
+            </p>
 
-                {% for entity in entities %}
+			{{article.article_body}}
+            <br>
 
-
+            {% for entity in entities %}
                 {% if entity.id == article.entity_id_id %}
-
-                {{entity.entity_date}}  {{entity.entity_time}}
-
+                    {{entity.entity_date}}  {{entity.entity_time}}
                 {% endif %}
+            {% endfor%}
 
-                {% endfor%}
-
-                {% endfor %}
-
-                {% else %}
-
-            <p>No Articles </p>
-
-            {% endif %}
-
-
-
-        </div>
-
-    </body>
-</html>
+        {% endfor %}
+	{% else %}
+		<p>No Articles </p>
+    {% endif %}
+</div>
+{% endblock %}

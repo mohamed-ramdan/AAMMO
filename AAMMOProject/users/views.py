@@ -1,14 +1,10 @@
-from PIL import Image
-import os
 import random
 import urllib2
-import StringIO
-import django.contrib.auth
 
+import django.contrib.auth
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.files.images import ImageFile
 from django.core.files.temp import NamedTemporaryFile
-from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
 from django.http.response import Http404
 from django.shortcuts import render, redirect
@@ -82,6 +78,10 @@ def register(request):
 					if new_user.user_image_path:
 						request.session['user_image'] = str(new_user.user_image_path)
 
+					# Set the admin flag based on whether the user is an admin or not.
+					if new_user.user_admin_status:
+						request.session['is_admin'] = True
+
 					# Format: subject,body,host to use,recipients,fail_silently
 					send_mail(
 						'Welcome to our website!',
@@ -92,7 +92,7 @@ def register(request):
 					)
 
 					# The URL to go to.
-					route_url = '/index/'
+					route_url = '/article/index/'
 
 					# Go to the index page since you successfully logged in.
 					return redirect(route_url)
@@ -109,10 +109,6 @@ def register(request):
 
 				# Create a url GET request to get the profile picture of the user.
 				image_request_url = 'http://graph.facebook.com/'+facebook_id+'/picture?type=large'
-				facebook_image_raw = urllib2.urlopen(image_request_url).read()
-
-				# Create image object from image that was read.
-				facebook_image = ImageFile(facebook_image_raw)
 
 				register_initial_data = {
 					'user_name': facebook_username,
@@ -146,7 +142,7 @@ def login(request):
 
 	# The user logged in by copying the URL in the bar.
 	if 'source_path' not in request.POST:
-		source_path = '/index/'
+		source_path = '/article/index/'
 		response = redirect(source_path)
 	else:
 
@@ -158,14 +154,14 @@ def login(request):
 		logged_username = request.POST['username']
 		logged_password = request.POST['user_password']
 
-		# The default data to send to the page is empty
-		context = {}
 		# The default login status is failure
 		request.session['login_failure'] = True
 
 		try:
+			# Get the user object
+			logged_user = Users.objects.get(user_name=logged_username)
 			# Get the password for the provided user name. Throws DoesNotExist exception if user is not found.
-			saved_user_password = Users.objects.get(user_name=logged_username).user_password
+			saved_user_password = logged_user.user_password
 			# Compare passwords to check they are correct.
 			is_similar = check_password(logged_password, saved_user_password)
 			# If the passwords are similar, then the user has successfully logged in.
@@ -174,6 +170,11 @@ def login(request):
 				request.session['logged'] = True
 				# Set the logged user name to the logged in username.
 				request.session['username'] = logged_username
+				# Set the user's profile picture session variable.
+				request.session['user_image'] = str(logged_user.user_image_path)
+				# Set the admin flag based on whether the user is an admin or not.
+				if logged_user.user_admin_status:
+					request.session['is_admin'] = True
 				# Delete the extra session variable.
 				del request.session['login_failure']
 				# If the remember me option is checked, then save a cookie with the user name of the logged user.
@@ -203,8 +204,6 @@ def login_facebook(request):
 	"""
 	# The facebook user data has been received successfully.
 	if request.user and not request.user.is_anonymous():
-		# Get the facebook user name, email and id from the database.
-		facebook_username = request.user.username
 		# Get the user's facebook registered email.
 		facebook_email = request.user.email
 		# The true Facebook id is in the python_auth_social migrated tables. You index it with the ID in the user object
@@ -228,6 +227,9 @@ def login_facebook(request):
 			request.session['username'] = logged_user.user_name
 			# Set the logged user profile picture path.
 			request.session['user_image'] = str(logged_user.user_image_path)
+			# Set the admin flag based on whether the user is an admin or not.
+			if logged_user.user_admin_status:
+				request.session['is_admin'] = True
 
 		# The user doesn't exist in the first place. Redirect to the registration page.
 		except Users.DoesNotExist:
@@ -253,7 +255,7 @@ def logout(request):
 
 	# Makes sure that the logout was performed from logout press or from the disconnect Facebook link.
 	if 'source_path' not in request.POST and 'source_path' not in request.GET:
-		source_path = '/index/'
+		source_path = '/article/index/'
 		response = redirect(source_path)
 	else:
 
@@ -350,7 +352,7 @@ def edit(request):
 	context = {}
 
 	if 'logged' not in request.session:
-		return redirect('/index/')
+		return redirect('/article/index/')
 
 	# The user has filled the form itself.
 	if request.method == 'POST':

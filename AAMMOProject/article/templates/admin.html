@@ -1,98 +1,45 @@
-<!doctype html>
-{% load static %} 
+{% extends 'base.html' %}
+{% load staticfiles %}
 
-<html>
-    <head>
-        <title>Home</title>
-    </head>
+{% block title %}
+	Admin Homepage
+{% endblock %}
 
-    <body>
+{% block body %}
+	{# REPLACE WITH CAROUSEL #}
+	<div class="header" >
+	    <div class="article_photos" style="width:100px ;height:100px; border:solid ">
+	        {% for article in articles %}
+	            <img src="{% static article.article_photo %}" width="100px" height="100px">
+	        {% endfor %}
+	    </div>
+	</div>
 
-        <div class="header" >
+	<a href = "/article/admin_article/">Date</a>
+	<a href = "/article/sort_published/">Sort by Publish Status</a>
+	<a href = "/article/create_article/">Create Article</a>
 
+	<div>
+		{% if articles %}
+			{%for article in articles%}
+				<a href='/article/open_article/{{article.id}}/' > {{article.article_title}}</a>
+				<p><img src="{% static article.article_photo %}"></p>
+	            {{article.article_body}}
 
-            <div class="articl_photos" style="wdith:100px ;height:100px; border:solid ">
-                {% for article in articles %}
-                <img src="/{{article.article_photo}}" width="100px" height="100px">
-                {% endfor %}
+				{% for entity in entities %}
+					{% if entity.id == article.entity_id_id %}
+						{{entity.entity_date}}  {{entity.entity_time}}
 
-            </div>
-            <form method='post' action=''>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='next' value='Next'> 
-            </form>
-            <form method='post' action=''>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='prev' value='Prev'>
-            </form> 
-        </div>
-        <form method='post' action='/article/admin_article/'>
-            {% csrf_token %}
-            <input  onclick='validate()'  type='submit' name='date' value='Date'>
-        </form> 
-        <form method='post' action='/article/sort_published/'>
-            {% csrf_token %}
-            <input  onclick='validate()'  type='submit' name='published' value='Published'>
-        </form>
-        <form method='post' action='/article/createarticle/'>
-            {% csrf_token %}
-            <input  onclick='validate()'  type='submit' name='create' value='Create Article'>
-
-        </form>  
-
-        <div class="buttons">
-            <form method='post' action='/article/admin_article/'>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='home' value='Home'> 
-            </form>
-            <form method='post' action='/article/list_articles/'>
-                {% csrf_token %}
-                <input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
-            </form>
-
-        </div>
-
-        <div>
-            {% if articles %}
-
-            {%for article in articles%}
-            <p>
-                <a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
-
-            <p><img src="/{{article.article_photo}}">
-            <p>
-                {{article.article_body}} 
-                <br/>
-
-                {% for entity in entities %}
-
-
-                {% if entity.id == article.entity_id_id %}
-
-                {{entity.entity_date}}  {{entity.entity_time}}
-                {% if entity.article_published == 0 %}
-                <br/>
-                not published
-                {% else %}
-                <br/>
-                published
-                {% endif %}
-
-                {% endif %}
-
-                {% endfor%}
-
-                {% endfor %}
-
-                {% else %}
-
-            <p>No Articles </p>
-
-            {% endif %}
-
-
-
-        </div>
-
-    </body>
-</html>
+						{% if entity.article_published == 0 %}
+							Not published
+						{% else %}
+							Published
+						{% endif %}
+					{% endif %}
+				{% endfor%}
+			{% endfor %}
+		{% else %}
+			<p>No Articles </p>
+	    {% endif %}
+	</div>
+{% endblock %}
