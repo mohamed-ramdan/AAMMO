@@ -13,11 +13,10 @@ class Comment (models.Model):
 	#The comment text field
 	comment_text=models.TextField()
 
-	#The article id  is a foregin key to Article to dedicate the comment on which article
-	article_id=models.ForeignKey(Article)
-
-	#The foreign key that make a relation between Entity and comment tables
-	entity_id=models.ForeignKey(Entity)
+	#The foreign key refrences to Entity that describe the type is comment
+	#represent child
+	entity_id=models.ForeignKey(Entity, related_name="home_set")
 	
-	#The foreign key that make a recurisive relation in table comment and to enable u make comment on comment
-	comment_id=models.ForeignKey('self')
+	#The foreign key refrences to Entity describe that comment on comment or on article
+	#represent parent
+	comment_id=models.ForeignKey(Entity,related_name="away_set")

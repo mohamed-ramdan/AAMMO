@@ -7,15 +7,15 @@
 
 			{%for comment_tuple in comments%}
 				
-				<p style="margin-left: {{ comment_tuple.depth }}*10px;">
+				<p style="margin-left: {{ comment_tuple.depth }}*50px;">
 					{# This is the comment ITSELF #}
-				    {{comment_tuple.comment }}
-					{{comment_tuple.author }}
-					{{comment_tuple.date }}
-					{{comment_tuple.time }}
+				    {{comment_tuple.comment.comment_text }}
+					{{comment_tuple.username }}
+					{{comment_tuple.entity.entity_date }}
+					{{comment_tuple.entity_time }}
 				<br>
 
-
+				{%  endfor %}
         {% else %}
 		
                 <p>No Comments </p>
