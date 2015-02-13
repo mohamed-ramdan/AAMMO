@@ -1,7 +1,7 @@
 from requests import models, models
 from django.db import models
 from users.models import Users
-
+from django.utils import timezone
 
 
 class Entity(models.Model):
@@ -15,10 +15,10 @@ class Entity(models.Model):
 	no_of_likes=models.IntegerField(default=0)
 
 	#The Date field either for article or for comment
-	entity_date=models.DateField()
+	entity_date=models.DateField(default=timezone.now)
 
 	#The Time field either for article or for comment
-	entity_time=models.TimeField()
+	entity_time=models.TimeField(default=timezone.now)
 
 	#The type field to decide article or comment (type=1 then comment else if type=2 then article)
 	entity_type=models.IntegerField(default=0)
