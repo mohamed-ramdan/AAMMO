@@ -1,0 +1,83 @@
+<!doctype html>
+	<html>
+		<head>
+			<title>Home</title>
+		</head>
+		
+		<body>
+		
+		<div class="header" >
+
+				
+				<div class="articl_photos" style="wdith:100px ;height:100px; border:solid ">
+				{% if articles %}
+				<img src="{{article.article_photo}}">
+				{% endif %}
+
+				</div>
+				<form method='post' action=''>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='next' value='Next'> 
+				</form>
+				<form method='post' action=''>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='prev' value='Prev'>
+				</form> 
+		</div>
+		<form method='post' action='/article/admin_article/'>
+		{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='date' value='Date'>
+				</form> 
+		<form method='post' action='/article/sort_published/'>
+		{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='published' value='Published'>
+				</form>
+		<form method='post' action=''>
+		{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='create' value='Create Article'>
+				</form>  
+
+		<div>
+		{% if articles %}
+
+			{%for article in articles%}
+				<p>
+				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
+
+				<p><img src="{{article.article_photo}}">
+				<p>
+				    {{article.article_body}} 
+				<br/>
+				
+				{% for entity in entities %}
+
+
+					{% if entity.id == article.entity_id_id %}
+
+	                  {{entity.entity_date}}  {{entity.entity_time}}
+		                  {% if entity.article_published == 0 %}
+			                  	<br/>
+			                  	not published
+		                  	{% else %}
+			                  	<br/>
+			                  	published
+		                  	{% endif %}
+					
+					{% endif %}
+					
+				{% endfor%}
+
+			{% endfor %}
+
+        {% else %}
+		
+                <p>No Articles </p>
+		
+		{% endif %}
+
+
+		
+		</div>
+
+		</body>
+	</html>

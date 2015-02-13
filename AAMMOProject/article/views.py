@@ -213,7 +213,7 @@ def home_article(request):
 	""" This function to list articles  limitted by 5 articles "home page" """
 
     # select all entites which type=2 that mean it`s article type sorting first by date then by time 
-	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')[:5]
+	entities = Entity.objects.filter(entity_type=2).order_by('-entity_date', '-entity_time')[:5]
 	#list of articles which saving on it the selected articles
 	articles_list=[]
 	# for loop that make inner join 
@@ -240,7 +240,7 @@ def list_articles(request):
 
 	""" This function to list all articles   "Articles page" """
 
-	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
+	entities = Entity.objects.filter(entity_type=2).order_by('-entity_date', '-entity_time')
 	#list of articles which saving on it the selected articles
 	articles_list=[]
 	# for loop that make inner join 
@@ -353,7 +353,7 @@ def admin_article(request):
                Sorted by default by published date  """
 
 	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
-	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
+	entities = Entity.objects.filter(entity_type=2).order_by('-entity_date', '-entity_time')
 	#list of articles which saving on it the selected articles
 	articles_list=[]
 	# for loop that make inner join 
@@ -380,7 +380,7 @@ def sort_published(request):
 	"""This function to sort the articles even published or not "admin page" """
 
 	# select all entites which type=2 that mean it`s article type sorting first by date then by time 
-	entities = Entity.objects.filter(entity_type=2).order_by('entity_date', 'entity_time')
+	entities = Entity.objects.filter(entity_type=2).order_by('-entity_date', '-entity_time')
 	# select all articles sorted by it's published or not
 	articles=Article.objects.all().order_by('-article_published')
 	context={'articles':articles,'entities':entities}

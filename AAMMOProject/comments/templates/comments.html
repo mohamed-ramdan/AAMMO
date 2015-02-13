@@ -1,0 +1,38 @@
+<html>
+
+		<body>
+	<div>
+
+{% if comments %}
+
+			{%for comment in comments%}
+				
+				<p>
+				    {{comment.comment_text}} 
+				<br>
+				
+				{% for entity in entities %}
+
+
+					{% if entity.id == comment.entity_id_id %}
+
+	                  {{entity.entity_date}}  {{entity.entity_time}}
+					
+					{% endif %}
+					
+				{% endfor%}
+
+			{% endfor %}
+
+        {% else %}
+		
+                <p>No Commentss </p>
+		
+		{% endif %}
+
+
+		
+		</div>
+
+		</body>
+	</html>
