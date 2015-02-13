@@ -1,0 +1,62 @@
+<!doctype html>
+{% load static %}
+	<html>
+		<head>
+			<title>Home</title>
+		</head>
+		
+		<body>
+
+		<div class="buttons">
+				{% if admin_flag %}
+				<form method='post' action='/article/admin_article/'>
+				{% csrf_token %}
+				{% else %}
+				<form method='post' action='/article/home_article/'>
+				{% csrf_token %}
+				{% endif %}
+				<input  onclick='validate()'  type='submit' name='home' value='Home'> 
+				</form>
+				<form method='post' action='/article/list_articles/'>
+				{% csrf_token %}
+				<input  onclick='validate()'  type='submit' name='articles' value='Articles'> 
+				</form>
+
+				</div>
+		
+		<div>
+		{% if articles %}
+
+			{%for article in articles%}
+				<p>
+				<a href='/article/open_article/{{article.id}}' > {{article.article_title}}</a>
+				<p><img src="/{{article.article_photo}}">
+				<p>
+				    {{article.article_body}} 
+				<br>
+				
+				{% for entity in entities %}
+
+
+					{% if entity.id == article.entity_id_id %}
+
+	                  {{entity.entity_date}}  {{entity.entity_time}}
+					
+					{% endif %}
+					
+				{% endfor%}
+
+			{% endfor %}
+
+        {% else %}
+		
+                <p>No Articles </p>
+		
+		{% endif %}
+
+
+		
+		</div>
+
+		</body>
+	</html>

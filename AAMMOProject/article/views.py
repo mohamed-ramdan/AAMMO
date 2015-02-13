@@ -32,7 +32,7 @@ def insert_article(request):
 		else:
 			article_publish = 0
 
-		# to get user
+		# To get user id, get the currently logged username and query the database for the id.
 		username = request.session['username']
 		check_user = Users.objects.get(user_name=username)
 
@@ -46,12 +46,15 @@ def insert_article(request):
 
 	except Exception, e:
 		return render(request, 'create_article.html', {'message': "Please enter all fields!"})
+
 	try:
 		# The following steps to save from create_article page in database in article table
 
 		# Upload picture to Article from file or no image inserted
 		article_instance = Article()
 		form = UploadImageForm(request.POST, request.FILES)
+
+		# Check if the form is valid
 		if form.is_valid():
 			# Save the photo and change the photo's name to the a_article_id
 			article_instance.article_photo = form.cleaned_data['image']
@@ -74,25 +77,23 @@ def insert_article(request):
 		return render(request, 'create_article.html', {'message': "Please enter all fields!"})
 
 
-def article(request, article_id):
-	"""
-	This function takes the value from the database and puts them in create_article page
-	with edit_mode=1 that mean it`s in edit mode
-	"""
-	# Get the article using the id.
-	article = Article.objects.get(pk=article_id)
-	entity_instance = Entity.objects.get(id=article.entity_id_id)
-	article_instance = Article.objects.get(entity_id_id=article.entity_id_id)
+def article(request, entity_id):
+	""" This is function of take the value from data base and put them in create_article page 
+		with edit_mode = 1 that mean it`s in edit mode"""
 
+	entity_instance = Entity.objects.get(id=entity_id)
+	article_instance = Article.objects.get(entity_id_id=entity_id)
 	context = {'entity': entity_instance, 'article': article_instance, 'edit_mode': 1}
 
 	return render(request, 'create_article.html', context)
 
 
-def edit_article(request, article_id):
-	""" This is function of editing in the article"""
+def edit_article(request, entity_id):
+	"""
+	This function performs editing of the article
+	"""
 
-	# The try and Exception block to handle the exception from no field is filled 
+	# The try and Exception block to handle the exception from fields being not filled
 	try:
 		# The following is to read from create_article page
 		article_title = request.POST['article_title']
@@ -109,18 +110,21 @@ def edit_article(request, article_id):
 			article_publish = 0
 
 		# The following steps to save what we read from create_article page in database in entity table
-		article = Article.objects.get(pk=article_id)
-		entity_instance = Entity.objects.get(id=article.entity_id_id)
+		entity_instance = Entity.objects.get(id=entity_id)
 		entity_instance.entity_date = article_date
 		entity_instance.entity_time = article_time
 		entity_instance.entity_type = entity_type
 		entity_instance.save()
 
 		# The following steps to save what we read from create_article page in database in article table
+		article_instance = Article.objects.get(entity_id_id=entity_id)
+
+		# The following steps to save what we read from create_article page in database in article table
 		article_instance = Article.objects.get(entity_id_id=article.entity_id_id)
 
-		# uploading picture to Article
+		# Uploading picture to Article
 		form = UploadImageForm(request.POST, request.FILES)
+
 		if form.is_valid():
 			# Save the photo and change the photo's name to the a_article_id
 			article_instance.article_photo = form.cleaned_data['image']
@@ -137,21 +141,22 @@ def edit_article(request, article_id):
 		article_instance.entity_id_id = entity_instance.id
 		article_instance.save()
 
-		return redirect("article/open_article/" + str(article_id) + "/")
+		return redirect("article/open_article/" + str(entity_id) + "/")
+
 	except:
 		context = {'message': "Please enter all fields!", 'entity': entity_instance, 'article': article, 'edit_mode': 1}
 		return render(request, 'create_article.html', context)
 
 
-def delete_article(request, article_id):
+def delete_article(request, entity_id):
 	"""
 	This function is to delete an article
 	"""
 
-	article = Article.objects.get(pk=article_id)
-	article = Article.objects.get(entity_id_id=article.entity_id_id)
+	# Get the article that points to the correct entity ID.
+	article = Article.objects.get(entity_id_id=entity_id)
 	article.delete()
-	instance = Entity.objects.get(id=article.entity_id_id)
+	instance = Entity.objects.get(id=entity_id)
 	instance.delete()
 
 	return redirect("article/home_article/")
@@ -213,18 +218,19 @@ def list_articles(request):
 	return render(request, 'articles.html', context)
 
 
-def open_article(request, article_id):
+def open_article(request, entity_id):
 	"""
 	This function to select article with it`s "Article page"
 	"""
 
-	article_data = get_object_or_404(Article, pk=article_id)
-	entity = Entity.objects.get(id=article_data.entity_id_id)
+	article_data = get_object_or_404(Article, entity_id=entity_id)
+	entity = Entity.objects.get(id=entity_id)
 
 	# Related tags in article page
 	list1 = []
+
 	# This line to get current Article by id
-	article = Article.objects.get(entity_id=article_data.entity_id_id)
+	article = Article.objects.get(entity_id=entity_id)
 
 	# This line to select all from article table
 	tags = Article.objects.all()
@@ -255,7 +261,7 @@ def open_article(request, article_id):
 	# For loop to get every user with it`s article
 	for current_user in all_user:
 		# Check if user in table of likes or not
-		if current_user.user_like_id_id == 2:
+		if current_user.user_like_id_id == 3:
 			# If current user likes this article or not
 			if current_user.entity_like_id_id == article_data.entity_id_id:
 				# Flag = 1 mean unlike button is visible
@@ -287,40 +293,40 @@ def sort_published(request):
 	return render(request, 'admin.html', context)
 
 
-def like(request, article_id):
+def like(request, entity_id):
 	"""
 	This function increases the no of likes when user clicks the Like button "Article page"
 	"""
 
 	# Get article data by it`s id
-	article_data = get_object_or_404(Article, pk=article_id)
+	article_data = get_object_or_404(Article, entity_id_id=entity_id)
 	# Get information of this article from parent Entity
-	entity = Entity.objects.get(id=article_data.entity_id_id)
+	entity = Entity.objects.get(id=entity_id)
 	entity.no_of_likes += 1
 	# Saving in database
 	entity.save()
 
-	# To get user id
-	username = request.session['username']
-	user = Users.objects.get(user_name=username)
+	# To get user id, get the currently logged username and query the database for the id.
+	logged_username = request.session['username']
+	user_object = Users.objects.get(user_name=logged_username)
 
 	# Saving that user likes this article
-	like = Likes()
-	like.user_like_id_id = user.user_id
-	like.entity_like_id_id = article_data.entity_id_id
-	like.save()
+	like_object = Likes()
+	like_object.user_like_id_id = user_object.user_id
+	like_object.entity_like_id_id = entity_id
+	like_object.save()
 
-	return redirect("article/open_article/" + str(article_id) + "/")
+	return redirect("article/open_article/" + str(entity_id) + "/")
 
 
-def unlike(request, article_id):
+def unlike(request, entity_id):
 	"""
 	This function decreases the no of likes when user submit unlike button "article page"
 	"""
 	# Get article data by it`s id
-	article_data = get_object_or_404(Article, pk=article_id)
+	article_data = get_object_or_404(Article, entity_id_id=entity_id)
 	# Get information of this article from parent Entity
-	entity = Entity.objects.get(id=article_data.entity_id_id)
+	entity = Entity.objects.get(id=entity_id)
 
 	if entity.no_of_likes <= 0:
 		entity.no_of_likes = 0
@@ -330,7 +336,7 @@ def unlike(request, article_id):
 	# Saving in database
 	entity.save()
 
-	# To get user id
+	# To get user id, get the currently logged username and query the database for the id.
 	username = request.session['username']
 	user = Users.objects.get(user_name=username)
 
@@ -346,7 +352,7 @@ def unlike(request, article_id):
 				# Delete his like
 				current_user.delete()
 
-	return redirect("article/open_article/" + str(article_id) + "/")
+	return redirect("article/open_article/" + str(entity_id) + "/")
 	
 
 
