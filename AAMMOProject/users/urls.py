@@ -7,4 +7,5 @@ urlpatterns = [
 	url(r'^login_facebook/', 'users.views.login_facebook'),
 	url(r'^password_recovery/', 'users.views.recover_password'),
 	url(r'^edit/', 'users.views.edit'),
+	url(r'^list_users/', 'users.views.list_users'),
 ]

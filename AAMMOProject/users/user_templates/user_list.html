@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{# Template title contents go here #}
+{% block title %}
+	User Lists
+{% endblock %}
+
+{% block body %}
+
+	{% if request.session.is_admin %}
+	<table>
+		<tr>
+			<th>Username</th>
+			<th>User Email</th>
+			<th>Facebook Connection Status</th>
+		</tr>
+		{% for local_user in users %}
+			<tr>
+				<td>{{ local_user.user_name }}</td>
+				<td>{{ local_user.user_email }}</td>
+				<td>
+					{% if local_user.user_facebook_id %}
+						Connected
+					{% else %}
+					    Unconnected
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	{% else %}
+		<h2>You are not authorized to see the contents of this page. Login as an administrator.</h2>
+	{% endif %}
+
+{% endblock %}

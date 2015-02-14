@@ -19,14 +19,15 @@
 	{{ entity.entity_date }} {{ entity.entity_time }}
 
 	{% if request.session.is_admin %}
-		<a href = "/article/article/{{ article.id }}/">Edit Article</a>
-		<a href = "/article/delete_article/{{ article.id }}/">Delete Article</a>
+		<a href = "/article/article/{{ article.entity_id_id }}/">Edit Article</a>
+		<a href = "/article/delete_article/{{ article.entity_id_id }}/">Delete Article</a>
 	{% else %}
-
-		{% if like_hidden %}
-			<a href = "/article/unlike/{{ article.id }}/">Unlike</a>
-		{% else %}
-			<a href = "/article/like/{{ article.id }}/">Like</a>
+		{% if request.session.logged %}
+			{% if like_hidden %}
+				<a href = "/article/unlike/{{ article.entity_id_id }}/">Unlike</a>
+			{% else %}
+				<a href = "/article/like/{{ article.entity_id_id }}/">Like</a>
+			{% endif %}
 		{% endif %}
 	{% endif %}
 	No of likes= {{ entity.no_of_likes }}

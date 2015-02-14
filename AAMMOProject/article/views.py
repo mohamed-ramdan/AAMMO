@@ -120,7 +120,7 @@ def edit_article(request, entity_id):
 		article_instance = Article.objects.get(entity_id_id=entity_id)
 
 		# The following steps to save what we read from create_article page in database in article table
-		article_instance = Article.objects.get(entity_id_id=article.entity_id_id)
+		# article_instance = Article.objects.get(entity_id_id=article.entity_id_id)
 
 		# Uploading picture to Article
 		form = UploadImageForm(request.POST, request.FILES)
@@ -223,30 +223,30 @@ def open_article(request, entity_id):
 	This function to select article with it`s "Article page"
 	"""
 
-	article_data = get_object_or_404(Article, entity_id=entity_id)
+	# article_data = get_object_or_404(Article, entity_id=entity_id)
 	entity = Entity.objects.get(id=entity_id)
 
 	# Related tags in article page
-	list1 = []
+	related_article_list = []
 
 	# This line to get current Article by id
 	article = Article.objects.get(entity_id=entity_id)
 
 	# This line to select all from article table
-	tags = Article.objects.all()
+	related_articles = Article.objects.all()
 	# This line to split tag  of current article into list
 	current_tag = article.article_tag.split(',')
 	# This is for loop to get row by row from Article table
-	for tag in tags:
+	for related_article in related_articles:
 		# This is to split tag of selected row
-		selected_tag = tag.article_tag.split(',')
+		selected_tag = related_article.article_tag.split(',')
 		# This two for loop is to compare word by wo
 		for word in selected_tag:
 			for current in current_tag:
 				# The if statement is to compare selected word from selected tag row and selected word from current tag
 				if current == word:
 					# Append the correct tag in list
-					list1.append(tag)
+					related_article_list.append(related_article)
 			# Break statement to not repeat the append
 			break
 
@@ -258,21 +258,26 @@ def open_article(request, entity_id):
 	# button is visible
 	like_hidden = 0
 
-	# For loop to get every user with it`s article
-	for current_user in all_user:
-		# Check if user in table of likes or not
-		if current_user.user_like_id_id == 3:
-			# If current user likes this article or not
-			if current_user.entity_like_id_id == article_data.entity_id_id:
-				# Flag = 1 mean unlike button is visible
-				like_hidden = 1
-				break
+	if 'username' in request.session:
+		# To get user id, get the currently logged username and query the database for the id.
+		logged_username = request.session['username']
+		logged_user = Users.objects.get(user_name=logged_username)
+
+		# For loop to get every user with it`s article
+		for current_user in all_user:
+			# Check if user in table of likes or not
+			if current_user.user_like_id_id == logged_user.user_id:
+				# If current user likes this article or not
+				if current_user.entity_like_id_id == article.entity_id_id:
+					# Flag = 1 mean unlike button is visible
+					like_hidden = 1
+					break
 
 	# Check the value of like_hidden
 	if like_hidden == 1:
-		context = {'article': article_data, 'entity': entity, 'tag': list1, 'like_hidden': like_hidden}
+		context = {'article': article, 'entity': entity, 'tag': related_article_list, 'like_hidden': like_hidden}
 	else:
-		context = {'article': article_data, 'entity': entity, 'tag': list1, 'like_hidden': like_hidden}
+		context = {'article': article, 'entity': entity, 'tag': related_article_list, 'like_hidden': like_hidden}
 
 	return render(request, 'article.html', context)
 
@@ -316,7 +321,7 @@ def like(request, entity_id):
 	like_object.entity_like_id_id = entity_id
 	like_object.save()
 
-	return redirect("article/open_article/" + str(entity_id) + "/")
+	return redirect("/article/open_article/" + str(entity_id) + "/")
 
 
 def unlike(request, entity_id):
@@ -352,7 +357,7 @@ def unlike(request, entity_id):
 				# Delete his like
 				current_user.delete()
 
-	return redirect("article/open_article/" + str(entity_id) + "/")
+	return redirect("/article/open_article/" + str(entity_id) + "/")
 	
 
 

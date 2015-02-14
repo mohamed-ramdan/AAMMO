@@ -467,3 +467,16 @@ def create_user(uploaded_data, uploaded_image):
 		new_user.user_image_path.save(fetched_image_path, ImageFile(fetched_image_file), save=True)
 
 	return new_user
+
+
+def list_users(request):
+
+	# Get all the users in the database.
+	users = Users.objects.all()
+
+	# Create context to send to the template.
+	context = {
+		'users': users
+	}
+
+	return render(request,'user_list.html',context)

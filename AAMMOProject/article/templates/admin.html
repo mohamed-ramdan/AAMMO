@@ -15,14 +15,14 @@
 	    </div>
 	</div>
 
-	<a href = "/article/admin_article/">Date</a>
-	<a href = "/article/sort_published/">Sort by Publish Status</a>
+	<a href = "/article/admin_article/">Sort Articles by Date</a>
+	<a href = "/article/sort_published/">Sort Articles by Publish Status</a>
 	<a href = "/article/create_article/">Create Article</a>
 
 	<div>
 		{% if articles %}
 			{%for article in articles%}
-				<a href='/article/open_article/{{article.id}}/' > {{article.article_title}}</a>
+				<a href='/article/open_article/{{article.entity_id_id}}/' > {{article.article_title}}</a>
 				<p><img src="{% static article.article_photo %}"></p>
 	            {{article.article_body}}
 

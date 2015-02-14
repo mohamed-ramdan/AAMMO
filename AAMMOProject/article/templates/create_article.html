@@ -7,7 +7,7 @@
 
 {% block body %}
 	{% if edit_mode %}
-		<form method = 'post' action = '/article/edit_article/{{ article.id }}/' enctype = "multipart/form-data">
+		<form method = 'post' action = '/article/edit_article/{{ article.entity_id_id }}/' enctype = "multipart/form-data">
 	{% else %}
 		<form method = 'post' action = '/article/insert_article/' enctype = "multipart/form-data">
 	{% endif %}
