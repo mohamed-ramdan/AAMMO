@@ -8,4 +8,10 @@ def check_politness(text):
 	forbidden_words = ['fool','god','israel','hate','bad']
 	for word in forbidden_words:
 		text = text.replace(word,'****')
-	return text 
+	return text
+
+def check_emoticons_existance(text):
+	emoticons = {':)':'/static/imgs/smile.gif',':P':'/static/imgs/tongue.gif','>:(':'/static/imgs/angry.gif',':O':'/static/imgs/shocked.gif'}
+	for face in emoticons:
+		text = text.replace(face,emoticons[face])
+	return text
