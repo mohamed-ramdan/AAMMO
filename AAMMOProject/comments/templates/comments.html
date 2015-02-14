@@ -1,30 +1,116 @@
 <html>
 
-		<body>
-	<div>
+    <body>
+
+
+        {% block comments %}
+        <!-- Comments  section starts -->
+        <!-- Add new comment -->
+        <div  id="addcomment" style="border: 1px solid black;margin:5px 5px 5px 5px;" >
+            <form method='post' action='/comment/insert_comment/1/'>   {%csrf_token%}
+                <textarea name='comment_body' rows="3" cols="50"></textarea>
+                <input type="submit" name='comment' value='comment'>
+            </form>
+        </div>
+
+        <!-- if there are comments exists then put Comment label-->
+        {% if comments %}
+        <p><u><h2>Comments: </h2></u></p>
+{% endif %}
+
 
 {% if comments %}
 
-			{%for comment_tuple in comments%}
-				
-				<p style="margin-left: {{ comment_tuple.depth }}*50px;">
-					{# This is the comment ITSELF #}
-				    {{comment_tuple.comment.comment_text }}
-					{{comment_tuple.username }}
-					{{comment_tuple.entity.entity_date }}
-					{{comment_tuple.entity_time }}
-				<br>
+{%for comment_tuple in comments%}
+{{ comment_tuple.depth }}
+<script type="text/javascript">
+    function indent(id,depth)
+    {
+        var element= getElementById(id);
+        element.style.marginLeft=10*depth+"px";
+    }
+</script>
+<div class="comment" id={{comment_tuple.comment.entity_id_id}}  style="border: 1px solid black; margin-top:10px; margin-left: {{ comment_tuple.depth }}*50px; ">
+    <div class="author">{{comment_tuple.username }}</div>
+    <div class="body">{{comment_tuple.comment.comment_text }}</div>
+    <div class="Date_time">{{comment_tuple.entity.entity_date }}|{{comment_tuple.entity_time }}</div>
+         {% if comment_tuple.like_hidden %}
+                <a href = "/comment/unlike/{{comment_tuple.comment.entity_id_id}}/">Unlike</a>
+            {% else %}
+                <a href = "/comment/like/{{comment_tuple.comment.entity_id_id}}/">Like</a>
+            {% endif %}
 
-				{%  endfor %}
-        {% else %}
-		
-                <p>No Comments </p>
-		
-		{% endif %}
+    <P>No of likes={{comment_tuple.entity.no_of_likes}}</P>
 
 
-		
-		</div>
+    <form method="post" action="javascript:Reply({{comment_tuple.comment.entity_id_id}})" >{% csrf_token %}
+        <input type="submit" id="replyBtn" name="reply" value="reply" />
+    </form>
 
-		</body>
-	</html>
+</div>
+
+{%  endfor %}
+{% else %}
+
+<p>No Comments </p>
+
+{% endif %}
+</div>
+
+<div  id="replycomment" style="border: 1px solid black;margin:5px 5px 5px 5px; display:none;" >
+            <form method='post' id="formReplay" >   {%csrf_token%}
+                <textarea name='comment_body' rows="3" cols="50"></textarea>
+                <input type="submit" name='comment' value='comment'>
+            </form>
+        </div>
+
+{% endblock %}
+
+<!--<div>
+
+{% if comments %}
+
+                {%for comment_tuple in comments%}
+                        
+                        <p style="margin-left: {{ comment_tuple.depth }}*50px;">
+                                {# This is the comment ITSELF #}
+                            {{comment_tuple.comment.comment_text }}
+                                {{comment_tuple.username }}
+                                {{comment_tuple.entity.entity_date }}
+                                {{comment_tuple.entity_time }}
+                        <br>
+
+                        {%  endfor %}
+{% else %}
+        
+        <p>No Comments </p>
+        
+        {% endif %}
+
+
+        
+        </div>-->
+
+
+<script>
+    var com_com = document.getElementById("replyBtn");
+    com_com.addEventListener("click", Reply);
+    function Reply(entity_id) {
+        
+    var elm=document.getElementById(entity_id);
+    var addcomment=document.getElementById("replycomment");
+        addcomment.style.display = 'block';
+        elm.appendChild(addcomment);
+    var myForm=document.getElementById("formReplay");
+        myForm.setAttribute("action",'/comment/insert_comment/'+entity_id+'/')
+    }
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
