@@ -24,7 +24,7 @@ def check_emoticons_existance(text):
     ':O':'/static/imgs/shocked.gif'
     }
 	for face in emoticons:
-		text = text.replace(face,'<img src="' + emoticons[face]+'" width="60px" height="50px" />')
+		text = text.replace(face,'<img src="{%' + emoticons[face]+'%}" width="60px" height="50px" />')
 	return text
 
-# "you are kind :)" is gonna be replaced with   -->   you are kind <img src="/static/imgs/smile.gif" width="60px" height="50px" />
+# "you are kind :)" is gonna be replaced with   -==>   you are kind <img src="{% static/imgs/smile.gif %}" width="60px" height="50px" />
