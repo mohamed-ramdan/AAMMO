@@ -6,40 +6,33 @@
 {% endblock %}
 
 {% block body %}
-	{# REPLACE WITH CAROUSEL #}
-	<div class="header" >
-	    <div class="article_photos" style="width:100px ;height:100px; border:solid ">
-	        {% for article in articles %}
-	            <img src="{% static article.article_photo %}" width="100px" height="100px">
-	        {% endfor %}
-	    </div>
-	</div>
+	<div class="container-fluid">
+		<a href = "/article/admin_article/">Sort Articles by Date</a>
+		<a href = "/article/sort_published/">Sort Articles by Publish Status</a>
+		<a href = "/article/create_article/">Create Article</a>
 
-	<a href = "/article/admin_article/">Sort Articles by Date</a>
-	<a href = "/article/sort_published/">Sort Articles by Publish Status</a>
-	<a href = "/article/create_article/">Create Article</a>
+		<div>
+			{% if articles %}
+				{%for article in articles%}
+					<a href='/article/open_article/{{article.entity_id_id}}/' > {{article.article_title}}</a>
+					<p><img src="{% static article.article_photo %}"></p>
+		            {{article.article_body}}
 
-	<div>
-		{% if articles %}
-			{%for article in articles%}
-				<a href='/article/open_article/{{article.entity_id_id}}/' > {{article.article_title}}</a>
-				<p><img src="{% static article.article_photo %}"></p>
-	            {{article.article_body}}
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							{{entity.entity_date}}  {{entity.entity_time}}
 
-				{% for entity in entities %}
-					{% if entity.id == article.entity_id_id %}
-						{{entity.entity_date}}  {{entity.entity_time}}
-
-						{% if entity.article_published == 0 %}
-							Not published
-						{% else %}
-							Published
+							{% if entity.article_published == 0 %}
+								Not published
+							{% else %}
+								Published
+							{% endif %}
 						{% endif %}
-					{% endif %}
-				{% endfor%}
-			{% endfor %}
-		{% else %}
-			<p>No Articles </p>
-	    {% endif %}
+					{% endfor%}
+				{% endfor %}
+			{% else %}
+				<p>No Articles </p>
+		    {% endif %}
+		</div>
 	</div>
 {% endblock %}

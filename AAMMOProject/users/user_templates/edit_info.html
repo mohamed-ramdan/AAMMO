@@ -19,11 +19,12 @@
 
 		</form>
 
-
 	{% elif edit_status %}
-
-		<h2>Changes have been made successfully!</h2>
-
+		<div class="container-fluid">
+			<div class="alert alert-success" role="alert">
+				<h2 class="text-center">Changes have been made successfully!</h2>
+			</div>
+		</div>
 	{% endif %}
 
 {% endblock %}

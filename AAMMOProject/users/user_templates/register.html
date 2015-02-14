@@ -14,18 +14,14 @@
 
 		{# Create registration form #}
 		<form method="post" enctype="multipart/form-data" action = "/users/register/">
-
 			{% csrf_token %}
-
 			{{ register_form }}
-
 			{% if user_image %}
 				<img src="{{ user_image }}">
 			{% endif %}
-
 			<input type = "submit" value="Submit!" />
-
 		</form>
+
 		{% if not user_image %}
 			<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Sign Up using Facebook</a>
 		{% endif %}

@@ -6,15 +6,52 @@
 {% endblock %}
 
 {% block body %}
+	<!-- Page gallery -->
+	<div id="article_gallery" class="carousel slide" data-ride="carousel">
 
-{# REPLACE WITH CAROUSEL #}
-<div class="header" >
-    <div class="article_photos" style="width:100px ;height:100px; border:solid ">
-        {%for article in articles%}
-            <img src="{% static article.article_photo %}" width="100px" height="100px">
-        {% endfor %}
-    </div>
-</div>
+		<!--
+			Image indicators at the bottom of the carousel. The first one must have a class of active. For loop
+			counter 0 starts iterating from 0 to give the list elements ids.
+		 -->
+		<ol class="carousel-indicators">
+			{% for article in articles %}
+				{% if forloop.counter0 == 0 %}
+					<li data-target="#article_gallery" data-slide-to="{{ forloop.counter0 }}" class="active"></li>
+				{% else %}
+					<li data-target="#article_gallery" data-slide-to="{{ forloop.counter0 }}"></li>
+				{% endif %}
+			{% endfor %}
+		</ol>
+
+		<!-- The slide images themselves, wrapped in mini-containers -->
+		<div class = "carousel-inner" role = "listbox">
+			{% for article in articles %}
+				<!-- Defines a slide with its captions -->
+				{% if forloop.counter0 == 0 %}
+					<div class = "item active">
+				{% else %}
+					<div class = "item">
+				{% endif %}
+						<img src = "{% static article.article_photo %}" alt = "{{ article.article_title }}">
+						<div class = "carousel-caption">
+							<h3>{{ article.article_title }}</h3>
+							<p>{{ entities.forloop.counter0.entity_date }}</p>
+							<p>{{ entities.forloop.counter0.entity_time }}</p>
+						</div>
+					</div>
+			{% endfor %}
+		</div>
+
+	  <!-- Controls -->
+	  <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+	    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	    <span class="sr-only">Previous</span>
+	  </a>
+	  <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+	    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	    <span class="sr-only">Next</span>
+	  </a>
+	</div>
 
 <div>
 	{% if articles %}

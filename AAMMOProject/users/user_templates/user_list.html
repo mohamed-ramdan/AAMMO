@@ -9,29 +9,38 @@
 {% block body %}
 
 	{% if request.session.is_admin %}
-	<table>
-		<tr>
-			<th>Username</th>
-			<th>User Email</th>
-			<th>Facebook Connection Status</th>
-		</tr>
-		{% for local_user in users %}
-			<tr>
-				<td>{{ local_user.user_name }}</td>
-				<td>{{ local_user.user_email }}</td>
-				<td>
-					{% if local_user.user_facebook_id %}
-						Connected
-					{% else %}
-					    Unconnected
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
-
+		<div class="container-fluid">
+			<table class="table table-responsive table-striped">
+				<tr>
+					<th>Username</th>
+					<th>User Email</th>
+					<th>Facebook Connection Status</th>
+					<th>Delete User</th>
+				</tr>
+				{% for local_user in users %}
+					<tr>
+						<td>{{ local_user.user_name }}</td>
+						<td>{{ local_user.user_email }}</td>
+						<td>
+							{% if local_user.user_facebook_id %}
+								Connected
+							{% else %}
+							    Unconnected
+							{% endif %}
+						</td>
+						<td><button class="btn btn-danger">Delete</button></td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
 	{% else %}
-		<h2>You are not authorized to see the contents of this page. Login as an administrator.</h2>
+		<div class="container-fluid">
+			<div class="alert alert-danger" role="alert">
+				<h2 class="text-center">
+					You are not authorized to see the contents of this page!
+					Login as an administrator!
+				</h2>
+			</div>
+		</div>
 	{% endif %}
-
 {% endblock %}
