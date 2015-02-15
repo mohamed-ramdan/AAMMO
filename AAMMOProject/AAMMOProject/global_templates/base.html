@@ -10,9 +10,9 @@
 	<title>{% block title %} Default Title {% endblock %}</title>
 
 	<!-- Bootstrap includes -->
-	<link href = "{% static 'css/styles.css' %}" rel = "stylesheet">
 	<link href = "{% static 'css/bootstrap.min.css' %}" rel = "stylesheet">
 	<link href = "{% static 'css/bootstrap-theme.min.css' %}" rel = "stylesheet">
+	<link href = "{% static 'css/styles.css' %}" rel = "stylesheet">
 
 </head>
 
@@ -139,7 +139,7 @@
 		</div><!-- /.container-fluid -->
 	</nav>
 </header>
-<br><br><br>
+{#<br><br><br>#}
 
 {# The body content pools from all pages that extend the base template. #}
 {% block body %}

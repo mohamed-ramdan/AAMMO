@@ -1,0 +1,14 @@
+body
+{
+    padding-top: 80px;
+}
+
+.bottom-buffer
+{
+    margin-bottom: 20px;
+}
+
+.bottom-clipper
+{
+    margin-bottom: 0px;
+}
