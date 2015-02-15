@@ -135,11 +135,27 @@
 					'X-CSRFToken': '{{ csrf_token }}'
 				},
 				success: function(data) {
+					// Add the data to the HTML page.
 					commentListContainer.innerHTML = data;
+
+					// Indent the data.
+					indentComments();
 				}
 			};
 			// Make Ajax call
 			$.ajax(urlToPost,ajaxOptions);
+		}
+
+		function indentComments()
+		{
+			// Get all the comments in the documents.
+			var comments = document.getElementsByClassName("comment");
+
+			for(var i=0;i<comments.length;i++)
+			{
+				var depth = comments[i].getAttribute("data-depth");
+				comments[i].style.marginLeft += depth*30+"px";
+			}
 		}
 
 		/**
@@ -171,7 +187,11 @@
 					'X-CSRFToken': '{{ csrf_token }}'
 				},
 				success: function(data) {
+					// Add the data to the HTML page.
 					commentListContainer.innerHTML = data;
+
+					// Indent the data.
+					indentComments();
 				}
 			};
 
@@ -203,9 +223,6 @@
 
 			// Display it.
 			newReplyBox.style.display = 'block';
-
-			// Add the new comment box as a child of the comment we clicked the reply button on.
-			{# commentToAppendOn.appendChild(newReplyBox); #}
 
 			// Add the new comment box next to the comment we clicked the reply button on.
 			commentToAppendOn.parentNode.insertBefore(newReplyBox, commentToAppendOn.nextSibling);
@@ -261,7 +278,11 @@
 					'X-CSRFToken': '{{ csrf_token }}'
 				},
 				success: function(data) {
+					// Add the data to the HTML page.
 					commentListContainer.innerHTML = data;
+
+					// Indent the data.
+					indentComments();
 				}
 			};
 
@@ -289,7 +310,11 @@
 					'X-CSRFToken': '{{ csrf_token }}'
 				},
 				success: function(data) {
+					// Add the data to the HTML page.
 					commentListContainer.innerHTML = data;
+
+					// Indent the data.
+					indentComments();
 				}
 			};
 
