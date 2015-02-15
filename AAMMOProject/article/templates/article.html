@@ -24,9 +24,9 @@
 	{% else %}
 		{% if request.session.logged %}
 			{% if like_hidden %}
-				<a href = "/article/unlike/{{ article.entity_id_id }}/">Unlike</a>
+				<a href="/article/unlike/{{ article.entity_id_id }}/">Unlike</a>
 			{% else %}
-				<a href = "/article/like/{{ article.entity_id_id }}/">Like</a>
+				<a href="/article/like/{{ article.entity_id_id }}/">Like</a>
 			{% endif %}
 		{% endif %}
 	{% endif %}
@@ -150,7 +150,7 @@
 			newReplyBox.style.display = 'block';
 
 			// Add the new comment box as a child of the comment we clicked the reply button on.
-{#			commentToAppendOn.appendChild(newReplyBox);#}
+			{# commentToAppendOn.appendChild(newReplyBox); #}
 
 			// Add the new comment box next to the comment we clicked the reply button on.
 			commentToAppendOn.parentNode.insertBefore(newReplyBox, commentToAppendOn.nextSibling);
@@ -192,9 +192,12 @@
 			// The data to send from the comment text box body.
 			var data = document.getElementById("reply_area_"+commentID).value;
 
+			// Remove the comment reply area.
+			document.getElementById("reply_box_"+commentID).remove();
+
 			var ajaxOptions = {
 				type: 'POST',
-				data: 'comment_body=' + data,
+				data: 'comment_body=' + data + "&article_id={{ article.entity_id_id }}",
 				headers: {
 					'X-CSRFToken': '{{ csrf_token }}'
 				},
@@ -207,5 +210,60 @@
 			$.ajax(urlToPost, ajaxOptions);
 		}
 
+		/**
+		 * This function 'likes' the entity with the given id. It queries the like function which likes the
+		 * button and reloads the whole screen.
+		 * @param entity_id The entity ID of the entity to like.
+		 */
+		function like(entity_id)
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/like/' + entity_id + '/';
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'article_id={{ article.entity_id_id }}',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
+
+		/**
+		 * This function 'unlikes' the entity with the given id. It queries the unlike function which unlikes the
+		 * button and reloads the whole screen.
+		 * @param entity_id The entity ID of the entity to like.
+		 */
+		function unlike(entity_id)
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/unlike/' + entity_id + '/';
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'article_id={{ article.entity_id_id }}',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
 	</script>
 {% endblock %}

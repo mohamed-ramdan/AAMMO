@@ -11,9 +11,9 @@
 			{# To show the Like Button, ensure the user is logged in and he is not an admin. #}
 			{% if not request.session.is_admin and request.session.username %}
 				{% if comment_tuple.like_hidden %}
-					<a href = "/comment/unlike/{{ comment_tuple.comment.entity_id_id }}/">Unlike</a>
+					<a style="cursor: pointer;" onclick="unlike({{ comment_tuple.comment.entity_id_id }})" >Unlike</a>
 				{% else %}
-					<a href = "/comment/like/{{ comment_tuple.comment.entity_id_id }}/">Like</a>
+					<a style="cursor: pointer;" onclick="like({{ comment_tuple.comment.entity_id_id }})">Like</a>
 				{% endif %}
 			{% endif %}
 

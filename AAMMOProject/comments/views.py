@@ -121,6 +121,9 @@ def insert_comment(request, entity_id):
 	comment_instance.entity_id_id = entity_instance.id
 	comment_instance.save()
 
+	if 'article_id' in request.POST:
+		entity_id = request.POST['article_id']
+
 	return list_comments(request, entity_id)
 
 
@@ -141,14 +144,14 @@ def like(request, entity_id):
 	logged_username = request.session['username']
 	user_object = Users.objects.get(user_name=logged_username)
 
-
 	# Saving that user likes this comment
 	like_object = Likes()
 	like_object.user_like_id_id = user_object.user_id
 	like_object.entity_like_id_id = entity_id
 	like_object.save()
 
-	return redirect("/comment/list_comments/")
+	# I query the list comments with the article ID to get the full DFS tree, not just the one with the comments.
+	return redirect("/comment/list_comments/" + request.POST['article_id'] + "/")
 
 
 def unlike(request, entity_id):
@@ -184,7 +187,8 @@ def unlike(request, entity_id):
 				# Delete his like
 				current_user.delete()
 
-	return redirect("/comment/list_comments/")
+	# I query the list comments with the article ID to get the full DFS tree, not just the one with the comments.
+	return redirect("/comment/list_comments/" + request.POST['article_id'] + "/")
 
 
 
