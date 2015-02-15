@@ -24,22 +24,246 @@
 	{% else %}
 		{% if request.session.logged %}
 			{% if like_hidden %}
-				<a href = "/article/unlike/{{ article.entity_id_id }}/">Unlike</a>
+				<a href="/article/unlike/{{ article.entity_id_id }}/">Unlike</a>
 			{% else %}
-				<a href = "/article/like/{{ article.entity_id_id }}/">Like</a>
+				<a href="/article/like/{{ article.entity_id_id }}/">Like</a>
 			{% endif %}
 		{% endif %}
 	{% endif %}
-	No of likes= {{ entity.no_of_likes }}
+	Likes= {{ entity.no_of_likes }}
 
+	<!-- Comment Block -->
+	<!----------------------------------------------------------------------------------------------------------------->
+	{% if request.session.logged %}
 	<div>
-		Comments HERE
+		<!-- Add new comment block -->
+		<div id = "add_comment" style = "border: 1px solid black;margin:5px 5px 5px 5px;">
+			<form name="comment_form">
+				{% csrf_token %}
+				<textarea placeholder="Write a comment .." name = "comment_body" rows = "3" cols = "50"></textarea>
+				<input onclick="insertComment('{{ article.entity_id_id }}')" type = "button" value = "Comment">
+			</form>
+		</div>
 	</div>
+	{% endif %}
+	<!----------------------------------------------------------------------------------------------------------------->
 
+	<!-- A list of all comments -->
+	<!----------------------------------------------------------------------------------------------------------------->
+	<div id="comment_list">
+
+	</div>
+	<!----------------------------------------------------------------------------------------------------------------->
+
+	<!-- A list of related articles -->
+	<!----------------------------------------------------------------------------------------------------------------->
 	<div class = "article" style = "width:100px ;height:100px; border:solid; ">
 		{% for onetag in tag %}
 			<a href = '/article/open_article/{{ onetag.id }}/'>{{ onetag.article_title }}</a>
 		{% endfor %}
 	</div>
+	<!----------------------------------------------------------------------------------------------------------------->
 
+	<script type="text/javascript">
+		// List all the comments when the page loads.
+		document.body.onload = listComments;
+
+		/**
+		 * This function simply lists all the comments in the page. We will call this on the body load.
+		 */
+		function listComments()
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/list_comments/{{ article.entity_id_id }}/';
+			// Create ajax options.
+			var ajaxOptions = {
+				type: 'GET',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+			// Make Ajax call
+			$.ajax(urlToPost,ajaxOptions);
+		}
+
+		/**
+		 * This function inserts a new comment by querying the server.
+		 * @param articleID
+		 */
+		function insertComment(entityId)
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/insert_comment/' + entityId + '/';
+
+			// The data to send from the comment text box body.
+			var data = document.forms.comment_form.comment_body.value;
+
+			// Reset the comments form
+			document.forms.comment_form.comment_body.value = "";
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'comment_body=' + data,
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
+
+		/**
+		* This function appends a reply comment box to the element where the reply button was clicked on.
+		* @param entity_id The entity id of the reply button that was clicked. It is also the comment id of the comment
+		 * that is being replied on.
+		*/
+		function showReplyBox(entity_id)
+		{
+			// Remove the reply button
+			document.getElementById(entity_id).remove();
+
+			// Get the comment ID from the id of the reply button. Ex: reply_button_2 returns 2.s
+			var commentID = entity_id.split("_").pop();
+
+			// Get the comment div itself.
+			var commentToAppendOn = document.getElementById(commentID);
+
+			// Create a new reply comment box from the stub box.
+			var newReplyBox = document.getElementById("reply_comment").cloneNode(true);
+
+			// Remove the ID of the new reply box.
+			newReplyBox.removeAttribute("id");
+
+			// Display it.
+			newReplyBox.style.display = 'block';
+
+			// Add the new comment box as a child of the comment we clicked the reply button on.
+			{# commentToAppendOn.appendChild(newReplyBox); #}
+
+			// Add the new comment box next to the comment we clicked the reply button on.
+			commentToAppendOn.parentNode.insertBefore(newReplyBox, commentToAppendOn.nextSibling);
+
+			// Give the reply box (the container for the comment and the button) and ID.
+			newReplyBox.id="reply_box_"+commentID;
+
+			// Get the first child of the reply box.
+			var replyForm = newReplyBox.firstElementChild;
+
+			// Get the reply button in the reply form.
+			var replyButton = replyForm.querySelector('[name=reply_button]');
+
+			// Get the reply text area from the reply form.
+			var replyTextArea = replyForm.querySelector('[id=reply_area]');
+
+			// Assign the reply button the id of the comment that it will reply on in this format: reply_button_id
+			replyButton.id = entity_id;
+
+			// Assign the reply text area the id of the comment that it will reply on in this format: reply_area_id
+			replyTextArea.id = 'reply_area_'+commentID;
+		}
+
+		/**
+		 * This function inserts a reply to the comment with the entity id.
+		 * @param entity_id
+		 */
+		function insertReply(entity_id)
+		{
+			// Get the comment ID from the id of the reply button. Ex: reply_button_2 returns 2.s
+			var commentID = entity_id.split("_").pop();
+
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/insert_comment/' + commentID + '/';
+
+			// The data to send from the comment text box body.
+			var data = document.getElementById("reply_area_"+commentID).value;
+
+			// Remove the comment reply area.
+			document.getElementById("reply_box_"+commentID).remove();
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'comment_body=' + data + "&article_id={{ article.entity_id_id }}",
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
+
+		/**
+		 * This function 'likes' the entity with the given id. It queries the like function which likes the
+		 * button and reloads the whole screen.
+		 * @param entity_id The entity ID of the entity to like.
+		 */
+		function like(entity_id)
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/like/' + entity_id + '/';
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'article_id={{ article.entity_id_id }}',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
+
+		/**
+		 * This function 'unlikes' the entity with the given id. It queries the unlike function which unlikes the
+		 * button and reloads the whole screen.
+		 * @param entity_id The entity ID of the entity to like.
+		 */
+		function unlike(entity_id)
+		{
+			// Get the container that will hold the comments.
+			var commentListContainer = document.getElementById("comment_list");
+
+			// The server URL that will serve the response.
+			var urlToPost = '/comment/unlike/' + entity_id + '/';
+
+			var ajaxOptions = {
+				type: 'POST',
+				data: 'article_id={{ article.entity_id_id }}',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					commentListContainer.innerHTML = data;
+				}
+			};
+
+			// Make Ajax call
+			$.ajax(urlToPost, ajaxOptions);
+		}
+	</script>
 {% endblock %}
