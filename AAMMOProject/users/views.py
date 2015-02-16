@@ -483,3 +483,18 @@ def list_users(request):
 	}
 
 	return render(request,'user_list.html',context)
+
+
+def delete_user(request, user_id):
+	"""
+	This function simple queries the database for the user with the ID given and removes him/her from the database.
+	:param request:
+	:param user_id: The user ID to delete.
+	:return: A redirect to the listing function.
+	"""
+
+	# Delete the user given by this ID.
+	Users.objects.get(user_id=user_id).delete()
+
+	# Return to the same page via this url.
+	return redirect('/users/list_users/')

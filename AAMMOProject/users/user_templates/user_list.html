@@ -10,26 +10,33 @@
 
 	{% if request.session.is_admin %}
 		<div class="container">
-			<h1 class="page-header">User List</h1>
+			<h1 class="page-header">
+			<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+				Users List
+			</h1>
 			<table class="table table-responsive table-striped">
 				<tr>
-					<th>Username</th>
-					<th>User Email</th>
-					<th>Facebook Connection Status</th>
-					<th>Delete User</th>
+					<th class="text-center">Username</th>
+					<th class="text-center">User Email</th>
+					<th class="text-center">Facebook Connection Status</th>
+					<th class="text-center">Delete User</th>
 				</tr>
 				{% for local_user in users %}
 					<tr>
-						<td>{{ local_user.user_name }}</td>
-						<td>{{ local_user.user_email }}</td>
-						<td>
+						<td class="text-center">{{ local_user.user_name }}</td>
+						<td class="text-center">{{ local_user.user_email }}</td>
+						<td class="text-center">
 							{% if local_user.user_facebook_id %}
-								Connected
+								<span class="label label-success">Connected</span>
 							{% else %}
-							    Unconnected
+							    <span class="label label-danger">Unconnected</span>
 							{% endif %}
 						</td>
-						<td><button class="btn btn-danger">Delete</button></td>
+						<td class="text-center">
+							<a href="/users/delete_user/{{ local_user.user_id }}/">
+								<button class="btn btn-danger">Delete</button>
+							</a>
+						</td>
 					</tr>
 				{% endfor %}
 			</table>

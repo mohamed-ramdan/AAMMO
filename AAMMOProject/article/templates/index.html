@@ -9,7 +9,12 @@
 	<!-- Page gallery -->
 	<div class="container">
 
-		<h1 class="page-header">Welcome <small>{{ request.session.username }}</small></h1>
+		<h1 class="page-header">
+			<span class="glyphicon glyphicon-tower" aria-hidden="true"></span>
+				Welcome
+				<small>{{ request.session.username }}
+				</small>
+		</h1>
 
 		<div id = "article_gallery" class = "carousel slide" data-ride = "carousel">
 			<!--
