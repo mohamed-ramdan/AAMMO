@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+	Admin Homepage
+{% endblock %}
+
+{% block body %}
+<div class="container">
+{% if request.session.is_admin %}
+	<h1 class="page-header">Articles <small>(Admin View)</small></h1>
+
+	<!-- Admin Controls -->
+	<!----------------------------------------------------------------------------------------------------------------->
+	<div class="row">
+		<div class="bottom-buffer col-md-12 text-center">
+			<a href = "/article/admin_article/">
+				<button class="btn btn-default">Sort Articles by Date</button>
+			</a>
+			<a href = "/article/sort_published/">
+				<button class="btn btn-default">Sort Articles by Publish Status</button>
+			</a>
+			<a href = "/article/create_article/">
+				<button class="btn btn-success">Create New Article</button>
+			</a>
+			<a href = "/users/list_users/">
+				<button class="btn btn-success">List Users</button>
+			</a>
+		</div>
+	</div>
+	<!----------------------------------------------------------------------------------------------------------------->
+
+		{% if articles %}
+			{% for article in articles %}
+				<!-- This block of code ensures that every 3 articles are on the same row -->
+				<!----------------------------------------------------------------------------------------------------->
+				{% if forloop.counter0|divisibleby:3 %}
+					{% if forloop.counter0 == 0 %}
+						<div class="row">
+					{% else %}
+						</div>
+						<hr />
+						<div class="row">
+					{% endif %}
+				{% endif %}
+				<!----------------------------------------------------------------------------------------------------->
+
+			    <!-- Article Content -->
+				<!----------------------------------------------------------------------------------------------------->
+				<div class="col-md-4">
+
+					<!-- Image Header -->
+					<a href = "/article/open_article/{{ article.entity_id_id }}/">
+						<div class="img-circle center-block" style='width: 200px; height: 200px;
+								background: url("{% static article.article_photo %}") center;'></div>
+					</a>
+
+					<!-- Header Text -->
+					<h2 class="text-center bottom-clipper">
+						<a href = "/article/open_article/{{ article.entity_id_id }}/">
+							{{ article.article_title }}
+						</a>
+					</h2>
+
+					<!-- Article Date -->
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<p class="lead text-center bottom-clipper">{{ entity.entity_date }}</p>
+						{% endif %}
+					{% endfor %}
+
+					<!-- Article Number of Likes and Publish Status -->
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<h4 class="text-center">
+								<span class="label label-info">Likes {{ entity.no_of_likes }}</span>
+								{% if entity.article_published == 0 %}
+								<span class="label label-warning">Not published</span>
+								{% else %}
+									<span class="label label-success">Published</span>
+								{% endif %}
+							</h4>
+						{% endif %}
+					{% endfor %}
+
+					<!-- Sample Content -->
+					<div class="text-center bottom-buffer" style="overflow: hidden; height: 100px;">
+						{{ article.article_body }}
+					</div>
+
+					<!-- Read More Button -->
+					<div class="text-center bottom-buffer">
+						<a class="btn btn-primary" href = "/article/open_article/{{ article.entity_id_id }}/">
+							Read More
+						</a>
+					</div>
+			    </div>
+				<!----------------------------------------------------------------------------------------------------->
+			{% endfor %}
+		{% else %}
+			<h2 class="text-center">No Articles </h2>
+		{% endif %}
+	</div>
+	{% else %}
+		<div class="alert alert-danger" role="alert">
+			<h2 class="text-center">
+				You are not authorized to see the contents of this page!
+				Login as an administrator!
+			</h2>
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

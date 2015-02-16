@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+
+<head lang = "en">
+
+	<meta charset = "UTF-8">
+	<meta name = "viewport" content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<title>{% block title %} Default Title {% endblock %}</title>
+
+	<!-- Bootstrap includes -->
+	<link href = "{% static 'css/bootstrap.min.css' %}" rel = "stylesheet">
+	<link href = "{% static 'css/bootstrap-theme.min.css' %}" rel = "stylesheet">
+	<link href = "{% static 'css/styles.css' %}" rel = "stylesheet">
+
+</head>
+
+<body>
+<header>
+	<!-- The navigation bar data and styling -->
+	<nav class = "navbar navbar-inverse navbar-fixed-top">
+		<div class = "container-fluid">
+			<!--------------------------------------------------------------------------------------------------------->
+			<!-- THIS IS FOR BEHAVIOUR PURPOSES AND THE BRAND -->
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class = "navbar-header">
+				<!-- Toggle collapsing behaviour -->
+				<button type = "button" class = "navbar-toggle collapsed" data-toggle = "collapse"
+				        data-target = "#navbar_collapse">
+					<span class = "sr-only">Toggle navigation</span>
+					<span class = "icon-bar"></span>
+					<span class = "icon-bar"></span>
+					<span class = "icon-bar"></span>
+				</button>
+				<!-- Add logo here -->
+				<a class = "navbar-brand" href = "/article/home_articles/">A-AMMO News</a>
+			</div>
+			<!-- END THIS IS FOR BEHAVIOUR PURPOSES AND THE BRAND -->
+			<!--------------------------------------------------------------------------------------------------------->
+
+			<!--------------------------------------------------------------------------------------------------------->
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class = "collapse navbar-collapse" id = "navbar_collapse">
+
+				<!----------------------------------------------------------------------------------------------------->
+				{# Display the navigation bar with extra Profile tab if logged in. #}
+				<ul class = "nav navbar-nav">
+					<li><a href = "/article/home_article/">Home</a></li>
+					<li><a href = "/article/list_articles/">Articles</a></li>
+					{% if request.session.username %}
+						<li><a href = "/users/edit/">Profile</a></li>
+					{% endif %}
+				</ul>
+				<!----------------------------------------------------------------------------------------------------->
+
+				<!----------------------------------------------------------------------------------------------------->
+				<!-- LOGIN/SIGNUP BUTTONS -->
+				<div id = "auth_controls">
+					{# The user is already logged in. Display Sign out button. #}
+					{# If the user is logged in, display his/her profile picture. #}
+					{% if request.session.logged %}
+						<!--------------------------------------------------------------------------------------------->
+						<div class="container-fluid">
+							{# The logout form #}
+							<form class = "navbar-form navbar-right" method = "POST" action = "/users/logout/">
+								{% csrf_token %}
+								<input name = "source_path" type = "hidden" value = "{{ request.path }}" />
+
+								<div class = "form-group">
+									<input class = "form-control btn btn-danger" type = "submit" value = "Logout" />
+								</div>
+							</form>
+
+							{# If the user is logged in, display his/her name. #}
+							<p class="navbar-text navbar-right">
+								Signed in as {{ request.session.username }}
+							</p>
+
+							{% if request.session.user_image %}
+								<img class="navbar-right navbar-brand" src = "{% static request.session.user_image %}"/>
+							{% endif %}
+
+						</div>
+						<!--------------------------------------------------------------------------------------------->
+					{% else %}
+						{# The user is not logged in. Display login or registration controls. #}
+						<!--------------------------------------------------------------------------------------------->
+						<form class = "navbar-form navbar-right" method = "POST" action = "/users/login/">
+							{% csrf_token %}
+							<input name = "source_path" type = "hidden" value = "{{ request.path }}" />
+
+							{# The user failed his login credentials. #}
+							{% if request.session.login_failure %}
+								<div class = "form-group has-error has-feedback">
+									<input class = "form-control" name = "username" type = "text"
+									       placeholder = "Username" autocomplete = "off" required="true" />
+									<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true">
+									</span>
+								</div>
+							{% else %}
+								<div class = "form-group">
+									<input class = "form-control" name = "username" type = "text"
+									       placeholder = "Username" autocomplete = "off" required="true" />
+								</div>
+                            {% endif %}
+
+							{% if request.session.login_failure %}
+							<div class = "form-group has-error has-feedback">
+								<input class = "form-control" name = "user_password" type = "password"
+							       placeholder = "Password" autocomplete = "off" required="true" />
+								<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true">
+								</span>
+							</div>
+                            {% else %}
+                                <div class = "form-group">
+									<input class = "form-control" name = "user_password" type = "password"
+							            placeholder = "Password" autocomplete = "off" required="true" />
+								</div>
+                            {%endif %}
+
+							<div class="checkbox btn navbar-btn">
+								<label style="color: #9d9d9d;">
+									<input class="" name = "remember_me" type = "checkbox" />
+									Remember Me
+								</label>
+							</div>
+
+							<input class="btn btn-success" type = "submit" value = "Login!" />
+						</form>
+						<!--------------------------------------------------------------------------------------------->
+
+					    <!-- Password recovery and facebook login -->
+						<!--------------------------------------------------------------------------------------------->
+						<p class="navbar-text navbar-right">
+							<a class="navbar-link" href = "/users/password_recovery/">Forgot password?</a>
+						</p>
+
+						{# This redirects the page to Facebook, with GET next key to the page to load afterwards the #}
+						{# facebook login. We pass a 'next' variable as a GET request to the login page to redirect me #}
+						{# back to the current url again. #}
+						<p class="navbar-text navbar-right">
+						<a class="navbar-link"
+					    href = "{% url 'social:begin' 'facebook' %}?next=/users/login_facebook/?next={{ request.path }}">
+								Login Using Facebook
+						</a>
+						</p>
+
+						<a class="btn btn-primary navbar-btn navbar-right" href = "/users/register/">Sign up!</a>
+						<!--------------------------------------------------------------------------------------------->
+					{% endif %}
+				</div>
+				<!----------------------------------------------------------------------------------------------------->
+			</div> <!-- /.navbar-collapse -->
+			<!--------------------------------------------------------------------------------------------------------->
+		</div><!-- /.container-fluid -->
+	</nav>
+</header>
+
+{# The body content pools from all pages that extend the base template. #}
+{% block body %}
+	Default CONTENT goes here
+{% endblock %}
+
+<script src = "{% static 'js/jquery-2.1.3.min.js' %}"></script>
+<script src = "{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{# Template title contents go here #}
+{% block title %}
+	User Lists
+{% endblock %}
+
+{% block body %}
+
+	{% if request.session.is_admin %}
+		<div class="container">
+			<h1 class="page-header">
+			<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+				Users List
+			</h1>
+			<table class="table table-responsive table-striped">
+				<tr>
+					<th class="text-center">Username</th>
+					<th class="text-center">User Email</th>
+					<th class="text-center">Facebook Connection Status</th>
+					<th class="text-center">Delete User</th>
+				</tr>
+				{% for local_user in users %}
+					<tr>
+						<td class="text-center">{{ local_user.user_name }}</td>
+						<td class="text-center">{{ local_user.user_email }}</td>
+						<td class="text-center">
+							{% if local_user.user_facebook_id %}
+								<span class="label label-success">Connected</span>
+							{% else %}
+							    <span class="label label-danger">Unconnected</span>
+							{% endif %}
+						</td>
+						<td class="text-center">
+							<a href="/users/delete_user/{{ local_user.user_id }}/">
+								<button class="btn btn-danger">Delete</button>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% else %}
+		<div class="container">
+			<div class="alert alert-danger" role="alert">
+				<h2 class="text-center">
+					You are not authorized to see the contents of this page!
+					Login as an administrator!
+				</h2>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}

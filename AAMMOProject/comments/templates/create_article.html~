@@ -1,0 +1,36 @@
+<html>
+{%if flag%}
+<form method='post' action='/article/edit_article/'>
+{%else%}
+
+<form method='post' action='/article/edit_article/'>
+{%endif%}
+{%csrf_token%}
+<div style="height:300px;border:solid;width:400px;float:right"><img src="10734094_10152850590443958_4272049440550589677_n.jpg"></div>
+
+Article photo<br><input type='file' name='article_photo' accept={{article.article_photo}}>
+<br>
+Article Title<br><input type='text' name='article_title' value={{article.article_title}}>
+<br>
+
+Article Tag<br><input type='text' name='article_tag' value={{article.article_tag}}>
+<br>
+Article Description<br><textarea rows="10" cols="80" name='article_body' >{{article.article_body}}</textarea>
+
+<br>
+Article Date<br><input type='date' name='article_date' value={{entity.entity_date}}>
+<br>
+Article Time<br><input type='time' name='article_time' value={{entity.entity_time}}>
+{%if article.article_published%}
+<br><input type='checkbox' name='publish_article' checked>Publish Artcile
+{%else%}
+<br><input type='checkbox' name='publish_article' >Publish Artcile
+{%endif%}
+<br>
+<input type='submit' name='save_article' value='save' >
+
+<form>
+
+
+
+</html>
