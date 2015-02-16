@@ -1,3 +1,4 @@
+import re
 def check_politeness(text):
 	"""
 	Function that check the politeness of text
@@ -6,7 +7,8 @@ def check_politeness(text):
 	"""
 	forbidden_words = ['fool', 'god', 'israel', 'hate', 'bad']
 	for word in forbidden_words:
-		text = text.replace(word, '****')
+		finder = re.compile(re.escape(word), re.IGNORECASE)
+		text = finder.sub('****', text)
 	return text
 
 

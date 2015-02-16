@@ -26,12 +26,13 @@
 						</span>
 					</h4>
 				{% endif %}
-
-				<button class="btn btn-primary pull-right"
-				        id = "reply_button_{{ comment_tuple.comment.entity_id_id }}"
-				        onclick="showReplyBox(this.id);">
-					Reply
-				</button>
+				{% if request.session.username %}
+					<button class="btn btn-primary pull-right"
+					        id = "reply_button_{{ comment_tuple.comment.entity_id_id }}"
+					        onclick="showReplyBox(this.id);">
+						Reply
+					</button>
+				{% endif %}
 			</div>
 		</div>
 		<!--------------------------------------------------------------------------------------------------------->

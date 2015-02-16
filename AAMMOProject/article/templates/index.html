@@ -41,7 +41,7 @@
 						<div class = "item">
 					{% endif %}
 							<div style=' width: 100%; height: 500px; background: url(
-									"{% static article.article_photo %}") center; background-size: 100%;'>
+									"{% static article.article_photo %}") center no-repeat; background-size: 100%;'>
 							</div>
 							<div class = "carousel-caption">
 								<h1>{{ article.article_title }}</h1>
@@ -102,7 +102,7 @@
 					<!------------------------------------------------------------------------------------------------->
 					<div class="col-md-5">
 						<a class="img-thumbnail" href = '/article/open_article/{{ article.entity_id_id }}/'>
-							<div class="center-block" style='width: 400px; height: 400px;
+							<div class="center-block img-responsive" style='width: 400px; height: 400px;
 								background: url("{% static article.article_photo %}") center;'></div>
 						</a>
 					</div>

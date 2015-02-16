@@ -78,7 +78,8 @@
 							</p>
 
 							{% if request.session.user_image %}
-								<img class="navbar-right navbar-brand" src = "{% static request.session.user_image %}"/>
+								<img class="navbar-right navbar-brand" style="width: 55px; height: 55px;" src =
+										"{% static request.session.user_image %}"/>
 							{% endif %}
 
 						</div>
