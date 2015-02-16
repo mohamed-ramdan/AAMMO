@@ -207,8 +207,13 @@ def list_articles(request):
 	# For loop that makes inner join
 	# Get all articles sorted which the foreign key entity_id in article class equal to id of entity class
 	for instance in entities:
-		article = Article.objects.get(entity_id=instance.id)
-
+		if 'is_admin' in request.session:
+			article = Article.objects.get(entity_id=instance.id)
+		else:
+			try:
+				article = Article.objects.get(entity_id=instance.id, article_published=1)
+			except:
+				continue
 		# Append the article in list of articles
 		articles_list.append(article)
 

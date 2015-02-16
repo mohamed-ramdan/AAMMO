@@ -67,6 +67,7 @@
 	<div class="container">
 		{% if articles %}
 			{% for article in articles %}
+				{% if article.article_published %}
 				<div class="row">
 
 					<!-- This snippet achieves the alternating photos effect -->
@@ -109,6 +110,7 @@
 					<!------------------------------------------------------------------------------------------------->
 				</div>
 				<hr style="margin: 70px 0px;" />
+				    {% endif %}
 			{% endfor %}
 		{% else %}
 			<h2>No Articles </h2>

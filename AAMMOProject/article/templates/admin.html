@@ -74,8 +74,8 @@
 						{% if entity.id == article.entity_id_id %}
 							<h4 class="text-center">
 								<span class="label label-info">Likes {{ entity.no_of_likes }}</span>
-								{% if entity.article_published == 0 %}
-								<span class="label label-warning">Not published</span>
+								{% if not article.article_published %}
+									<span class="label label-warning">Not published</span>
 								{% else %}
 									<span class="label label-success">Published</span>
 								{% endif %}
