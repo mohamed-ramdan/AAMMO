@@ -6,22 +6,76 @@
 {% endblock %}
 
 {% block body %}
-	<div>
+	<div class="container">
+	<h2 class="page-header">Articles</h2>
+
 		{% if articles %}
 			{% for article in articles %}
-				<a href = "/article/open_article/{{ article.entity_id_id }}/"> {{ article.article_title }}</a>
-				<img src = "{% static article.article_photo %}">
-				{{ article.article_body }}
 
-				{% for entity in entities %}
-					{% if entity.id == article.entity_id_id %}
-						{{ entity.entity_date }}  {{ entity.entity_time }}
+				<!-- This block of code ensures that every 3 articles are on the same row -->
+				<!----------------------------------------------------------------------------------------------------->
+				{% if forloop.counter0|divisibleby:3 %}
+					{% if forloop.counter0 == 0 %}
+						<div class="row">
+					{% else %}
+						</div>
+						<hr />
+						<div class="row">
 					{% endif %}
-				{% endfor %}
-			{% endfor %}
+				{% endif %}
+				<!----------------------------------------------------------------------------------------------------->
 
+			    <!-- Article Content -->
+				<!----------------------------------------------------------------------------------------------------->
+				<div class="col-md-4">
+
+					<!-- Image Header -->
+					<a href = "/article/open_article/{{ article.entity_id_id }}/">
+						<div class="img-circle center-block" style='width: 200px; height: 200px;
+								background: url("{% static article.article_photo %}") center;'></div>
+					</a>
+
+					<!-- Header Text -->
+					<h2 class="text-center bottom-clipper">
+						<a href = "/article/open_article/{{ article.entity_id_id }}/">
+							{{ article.article_title }}
+						</a>
+					</h2>
+
+					<!-- Article Date -->
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<p class="lead text-center bottom-clipper">{{ entity.entity_date }}</p>
+						{% endif %}
+					{% endfor %}
+
+
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<h4 class="text-center">
+								<span class="label label-info">Likes {{ entity.no_of_likes }}</span>
+							</h4>
+						{% endif %}
+					{% endfor %}
+
+
+					<!-- Sample Content -->
+					<div class="text-center bottom-buffer" style="overflow: hidden; height: 100px;">
+						{{ article.article_body }}
+					</div>
+
+					<!-- Read More Button -->
+					<div class="text-center bottom-buffer">
+						<a class="btn btn-primary" href = "/article/open_article/{{ article.entity_id_id }}/">
+							Read More
+						</a>
+					</div>
+			    </div>
+				<!----------------------------------------------------------------------------------------------------->
+			{% endfor %}
 		{% else %}
-			<p>No Articles </p>
+			<h2 class="text-center">No Articles </h2>
 		{% endif %}
+		</div>
 	</div>
 {% endblock %}

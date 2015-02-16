@@ -7,75 +7,107 @@
 
 {% block body %}
 	<!-- Page gallery -->
-	<div id="article_gallery" class="carousel slide" data-ride="carousel">
+	<div class="container">
 
-		<!--
-			Image indicators at the bottom of the carousel. The first one must have a class of active. For loop
-			counter 0 starts iterating from 0 to give the list elements ids.
-		 -->
-		<ol class="carousel-indicators">
-			{% for article in articles %}
-				{% if forloop.counter0 == 0 %}
-					<li data-target="#article_gallery" data-slide-to="{{ forloop.counter0 }}" class="active"></li>
-				{% else %}
-					<li data-target="#article_gallery" data-slide-to="{{ forloop.counter0 }}"></li>
-				{% endif %}
-			{% endfor %}
-		</ol>
+		<h1 class="page-header">Welcome <small>{{ request.session.username }}</small></h1>
 
-		<!-- The slide images themselves, wrapped in mini-containers -->
-		<div class = "carousel-inner" role = "listbox">
-			{% for article in articles %}
-				<!-- Defines a slide with its captions -->
-				{% if forloop.counter0 == 0 %}
-					<div class = "item active">
-				{% else %}
-					<div class = "item">
-				{% endif %}
-						<img src = "{% static article.article_photo %}" alt = "{{ article.article_title }}">
-						<div class = "carousel-caption">
-							<h3>{{ article.article_title }}</h3>
-							<p>{{ entities.forloop.counter0.entity_date }}</p>
-							<p>{{ entities.forloop.counter0.entity_time }}</p>
+		<div id = "article_gallery" class = "carousel slide" data-ride = "carousel">
+			<!--
+				Image indicators at the bottom of the carousel. The first one must have a class of active. For loop
+				counter 0 starts iterating from 0 to give the list elements ids.
+			 -->
+			<ol class = "carousel-indicators">
+				{% for article in articles %}
+					{% if forloop.counter0 == 0 %}
+						<li data-target = "#article_gallery" data-slide-to = "{{ forloop.counter0 }}" class = "active"></li>
+					{% else %}
+						<li data-target = "#article_gallery" data-slide-to = "{{ forloop.counter0 }}"></li>
+					{% endif %}
+				{% endfor %}
+			</ol>
+
+			<!-- The slide images themselves, wrapped in mini-containers -->
+			<div class = "carousel-inner" role = "listbox">
+				{% for article in articles %}
+					<!-- Defines a slide with its captions -->
+					{% if forloop.counter0 == 0 %}
+						<div class = "item active">
+					{% else %}
+						<div class = "item">
+					{% endif %}
+							<div style=' width: 100%; height: 500px; background: url(
+									"{% static article.article_photo %}") center; background-size: 100%;'>
+							</div>
+							<div class = "carousel-caption">
+								<h1>{{ article.article_title }}</h1>
+								<button class=" bottom-buffer btn btn-success">Read More</button>
+							</div>
 						</div>
-					</div>
-			{% endfor %}
-		</div>
+				{% endfor %}
+			</div>
 
-	  <!-- Controls -->
-	  <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
-	    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-	    <span class="sr-only">Previous</span>
-	  </a>
-	  <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
-	    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-	    <span class="sr-only">Next</span>
-	  </a>
+			<!-- Controls -->
+			<a class = "left carousel-control" href = "#article_gallery" role = "button" data-slide = "prev">
+				<span class = "glyphicon glyphicon-chevron-left" aria-hidden = "true"></span>
+				<span class = "sr-only">Previous</span>
+			</a>
+			<a class = "right carousel-control" href = "#article_gallery" role = "button" data-slide = "next">
+				<span class = "glyphicon glyphicon-chevron-right" aria-hidden = "true"></span>
+				<span class = "sr-only">Next</span>
+			</a>
+		</div>
+		<hr style="margin-bottom: 70px;" />
 	</div>
 
-<div>
-	{% if articles %}
-		{%for article in articles%}
-            <p>
-                <a href='/article/open_article/{{article.entity_id_id}}/' > {{article.article_title}}</a>
-			</p>
+	<div class="container">
+		{% if articles %}
+			{% for article in articles %}
+				<div class="row">
 
-            <p>
-	            <img src="{% static article.article_photo %}">
-            </p>
+					<!-- This snippet achieves the alternating photos effect -->
+					{% if forloop.counter0|divisibleby:2 %}
+						<div class="col-md-7">
+					{% else %}
+						<div class="col-md-7 pull-right">
+					{% endif %}
 
-			{{article.article_body}}
-            <br>
+						<!-- Header and Body Content -->
+						<!--------------------------------------------------------------------------------------------->
+						<h1>
+							<a href = '/article/open_article/{{ article.entity_id_id }}/'>
+								{{ article.article_title }}
+							</a>
+							&nbsp;
+							{% for entity in entities %}
+								{% if entity.id == article.entity_id_id %}
+									<small>{{ entity.entity_date }}</small>
+								{% endif %}
+							{% endfor %}
+						</h1>
+						<p class="lead" style="height: 90px; overflow: hidden;">
+							{{ article.article_body }}
+						</p>
+						<a href = '/article/open_article/{{ article.entity_id_id }}/'>
+							<button class="btn btn-primary">Read More</button>
+						</a>
+					</div>
+					<!------------------------------------------------------------------------------------------------->
 
-            {% for entity in entities %}
-                {% if entity.id == article.entity_id_id %}
-                    {{entity.entity_date}}  {{entity.entity_time}}
-                {% endif %}
-            {% endfor%}
+					<!-- Image Content -->
+					<!------------------------------------------------------------------------------------------------->
+					<div class="col-md-5">
+						<a class="img-thumbnail" href = '/article/open_article/{{ article.entity_id_id }}/'>
+							<div class="center-block" style='width: 400px; height: 400px;
+								background: url("{% static article.article_photo %}") center;'></div>
+						</a>
+					</div>
+					<!------------------------------------------------------------------------------------------------->
+				</div>
+				<hr style="margin: 70px 0px;" />
+			{% endfor %}
+		{% else %}
+			<h2>No Articles </h2>
+		{% endif %}
+	</div>
 
-        {% endfor %}
-	{% else %}
-		<p>No Articles </p>
-    {% endif %}
-</div>
 {% endblock %}

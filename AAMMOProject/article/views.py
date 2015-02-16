@@ -223,7 +223,6 @@ def open_article(request, entity_id):
 	This function to select article with it`s "Article page"
 	"""
 
-	# article_data = get_object_or_404(Article, entity_id=entity_id)
 	entity = Entity.objects.get(id=entity_id)
 
 	# Related tags in article page

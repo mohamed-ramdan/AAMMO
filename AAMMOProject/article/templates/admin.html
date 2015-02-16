@@ -6,33 +6,96 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container-fluid">
-		<a href = "/article/admin_article/">Sort Articles by Date</a>
-		<a href = "/article/sort_published/">Sort Articles by Publish Status</a>
-		<a href = "/article/create_article/">Create Article</a>
+<div class="container">
+	<h2 class="page-header">Articles <small>(Admin View)</small></h2>
 
-		<div>
-			{% if articles %}
-				{%for article in articles%}
-					<a href='/article/open_article/{{article.entity_id_id}}/' > {{article.article_title}}</a>
-					<p><img src="{% static article.article_photo %}"></p>
-		            {{article.article_body}}
-
-					{% for entity in entities %}
-						{% if entity.id == article.entity_id_id %}
-							{{entity.entity_date}}  {{entity.entity_time}}
-
-							{% if entity.article_published == 0 %}
-								Not published
-							{% else %}
-								Published
-							{% endif %}
-						{% endif %}
-					{% endfor%}
-				{% endfor %}
-			{% else %}
-				<p>No Articles </p>
-		    {% endif %}
+	<!-- Admin Controls -->
+	<!----------------------------------------------------------------------------------------------------------------->
+	<div class="row">
+		<div class="bottom-buffer col-md-12 text-center">
+			<a href = "/article/admin_article/">
+				<button class="btn btn-default">Sort Articles by Date</button>
+			</a>
+			<a href = "/article/sort_published/">
+				<button class="btn btn-default">Sort Articles by Publish Status</button>
+			</a>
+			<a href = "/article/create_article/">
+				<button class="btn btn-success">Create New Article</button>
+			</a>
 		</div>
 	</div>
+	<!----------------------------------------------------------------------------------------------------------------->
+
+		{% if articles %}
+			{% for article in articles %}
+				<!-- This block of code ensures that every 3 articles are on the same row -->
+				<!----------------------------------------------------------------------------------------------------->
+				{% if forloop.counter0|divisibleby:3 %}
+					{% if forloop.counter0 == 0 %}
+						<div class="row">
+					{% else %}
+						</div>
+						<hr />
+						<div class="row">
+					{% endif %}
+				{% endif %}
+				<!----------------------------------------------------------------------------------------------------->
+
+			    <!-- Article Content -->
+				<!----------------------------------------------------------------------------------------------------->
+				<div class="col-md-4">
+
+					<!-- Image Header -->
+					<a href = "/article/open_article/{{ article.entity_id_id }}/">
+						<div class="img-circle center-block" style='width: 200px; height: 200px;
+								background: url("{% static article.article_photo %}") center;'></div>
+					</a>
+
+					<!-- Header Text -->
+					<h2 class="text-center bottom-clipper">
+						<a href = "/article/open_article/{{ article.entity_id_id }}/">
+							{{ article.article_title }}
+						</a>
+					</h2>
+
+					<!-- Article Date -->
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<p class="lead text-center bottom-clipper">{{ entity.entity_date }}</p>
+						{% endif %}
+					{% endfor %}
+
+					<!-- Article Number of Likes and Publish Status -->
+					{% for entity in entities %}
+						{% if entity.id == article.entity_id_id %}
+							<h4 class="text-center">
+								<span class="label label-info">Likes {{ entity.no_of_likes }}</span>
+								{% if entity.article_published == 0 %}
+								<span class="label label-warning">Not published</span>
+								{% else %}
+									<span class="label label-success">Published</span>
+								{% endif %}
+							</h4>
+						{% endif %}
+					{% endfor %}
+
+					<!-- Sample Content -->
+					<div class="text-center bottom-buffer" style="overflow: hidden; height: 100px;">
+						{{ article.article_body }}
+					</div>
+
+					<!-- Read More Button -->
+					<div class="text-center bottom-buffer">
+						<a class="btn btn-primary" href = "/article/open_article/{{ article.entity_id_id }}/">
+							Read More
+						</a>
+					</div>
+			    </div>
+				<!----------------------------------------------------------------------------------------------------->
+			{% endfor %}
+		{% else %}
+			<h2 class="text-center">No Articles </h2>
+		{% endif %}
+	</div>
+</div>
 {% endblock %}

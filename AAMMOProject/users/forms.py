@@ -14,7 +14,7 @@ class RegisterForm(forms.Form):
 	user_name = forms.CharField(
 		label="Enter user name",
 		max_length=100,
-		widget=forms.TextInput(attrs={'placeholder': 'Enter username here ...'})
+		widget=forms.TextInput(attrs={'placeholder': 'Enter username here ...'}),
 	)
 
 	# The email field for the login form.
@@ -42,7 +42,7 @@ class RegisterForm(forms.Form):
 	user_image = forms.ImageField(
 		label="Choose your profile picture",
 		help_text="Maximum: 4 Mb",
-		required=False
+		required=False,
 	)
 
 	# Create captcha field.

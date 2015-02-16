@@ -41,9 +41,11 @@
 				<div class="list-group">
 					<h4 class="list-group-item active">Related Articles</h4>
 					{% for onetag in tag %}
-						<a class="list-group-item" href = '/article/open_article/{{ onetag.id }}/'>
-							{{ onetag.article_title }}
-						</a>
+						{% if onetag.article_title !=  article.article_title %}
+							<a class="list-group-item" href = '/article/open_article/{{ onetag.entity_id_id }}/'>
+								{{ onetag.article_title }}
+							</a>
+						{% endif %}
 					{% endfor %}
 				</div>
 			</div>

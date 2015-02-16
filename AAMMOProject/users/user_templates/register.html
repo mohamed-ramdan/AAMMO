@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load bootstrap %}
 
 {# Template title contents go here #}
 {% block title %}
@@ -8,34 +9,45 @@
 
 {# Template body contents go here #}
 {% block body %}
+	<div class="container">
+		{# If the registration form object exists that means the user is not logged in. #}
+		{% if register_form %}
 
-	{# If the registration form object exists that means the user is not logged in. #}
-	{% if register_form %}
+			{# Create registration form #}
+			<form method="post" enctype="multipart/form-data" action = "/users/register/">
+				{% csrf_token %}
+				{{ register_form|bootstrap }}
+				{% if user_image %}
+					<img src="{{ user_image }}">
+				{% endif %}
+				<input class="btn btn-success btn-lg pull-right" type = "submit" value="Submit!" />
+			</form>
 
-		{# Create registration form #}
-		<form method="post" enctype="multipart/form-data" action = "/users/register/">
-			{% csrf_token %}
-			{{ register_form }}
-			{% if user_image %}
-				<img src="{{ user_image }}">
+			{% if not user_image %}
+				<h4>
+					<a class="label label-primary"
+					   href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
+						Sign Up using Facebook
+					</a>
+				</h4>
 			{% endif %}
-			<input type = "submit" value="Submit!" />
-		</form>
+			{% if user_image %}
+				<h4>
+					<a class="label label-danger" href="/users/logout/?source_path={{ request.path }}">
+						Disconnect from Facebook
+					</a>
+				</h4>
+			{% endif %}
 
-		{% if not user_image %}
-			<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Sign Up using Facebook</a>
+		{# The user is already logged in. Display a message telling him that. #}
+		{% else %}
+
+			<h1>
+				You are already logged in!
+			</h1>
+
 		{% endif %}
-		{% if user_image %}
-			<a href="/users/logout/?source_path={{ request.path }}">Disconnect from Facebook</a>
-		{% endif %}
 
-	{# The user is already logged in. Display a message telling him that. #}
-	{% else %}
-
-		<h1>
-			You are already logged in!
-		</h1>
-
-	{% endif %}
+	</div>
 
 {% endblock %}
