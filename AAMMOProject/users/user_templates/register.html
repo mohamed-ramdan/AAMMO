@@ -10,26 +10,23 @@
 {# Template body contents go here #}
 {% block body %}
 	<div class="container">
+		<h1 class="page-header"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Sign Up!</h1>
 		{# If the registration form object exists that means the user is not logged in. #}
 		{% if register_form %}
-
 			{# Create registration form #}
-			<form method="post" enctype="multipart/form-data" action = "/users/register/">
+			<form class="bottom-buffer" method="post" enctype="multipart/form-data" action = "/users/register/">
 				{% csrf_token %}
 				{{ register_form|bootstrap }}
 				{% if user_image %}
 					<img src="{{ user_image }}">
 				{% endif %}
-				<input class="btn btn-success btn-lg pull-right" type = "submit" value="Submit!" />
+				<input class="btn btn-success btn-block" type = "submit" value="Sign Up!" />
 			</form>
 
 			{% if not user_image %}
-				<h4>
-					<a class="label label-primary"
-					   href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
-						Sign Up using Facebook
+					<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
+						<button class="btn btn-info btn-block">Sign Up using Facebook</button>
 					</a>
-				</h4>
 			{% endif %}
 			{% if user_image %}
 				<h4>
@@ -41,13 +38,12 @@
 
 		{# The user is already logged in. Display a message telling him that. #}
 		{% else %}
-
-			<h1>
-				You are already logged in!
-			</h1>
-
+			<div class="alert alert-info" role="alert">
+				<h1 class="text-center">
+					You are already logged in!
+				</h1>
+			</div>
 		{% endif %}
 
 	</div>
-
 {% endblock %}

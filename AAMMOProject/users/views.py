@@ -392,6 +392,9 @@ def edit(request):
 
 				# A flag that indicates that the image has been altered.
 				changed_image = True
+			else:
+				# Indicate that the image has not changed.
+				changed_image = False
 
 			# Save updates to the current user.
 			current_user.save()

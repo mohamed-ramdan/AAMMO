@@ -7,6 +7,7 @@
 
 {% block body %}
 <div class="container">
+{% if request.session.is_admin %}
 	<h2 class="page-header">Articles <small>(Admin View)</small></h2>
 
 	<!-- Admin Controls -->
@@ -21,6 +22,9 @@
 			</a>
 			<a href = "/article/create_article/">
 				<button class="btn btn-success">Create New Article</button>
+			</a>
+			<a href = "/users/list_users/">
+				<button class="btn btn-success">List Users</button>
 			</a>
 		</div>
 	</div>
@@ -97,5 +101,13 @@
 			<h2 class="text-center">No Articles </h2>
 		{% endif %}
 	</div>
+	{% else %}
+		<div class="alert alert-danger" role="alert">
+			<h2 class="text-center">
+				You are not authorized to see the contents of this page!
+				Login as an administrator!
+			</h2>
+		</div>
+	{% endif %}
 </div>
 {% endblock %}
