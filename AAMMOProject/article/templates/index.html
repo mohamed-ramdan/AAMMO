@@ -45,7 +45,9 @@
 							</div>
 							<div class = "carousel-caption">
 								<h1>{{ article.article_title }}</h1>
-								<button class=" bottom-buffer btn btn-success">Read More</button>
+								<a href = "/article/open_article/{{ article.entity_id_id }}/">
+									<button class=" bottom-buffer btn btn-success">Read More</button>
+								</a>
 							</div>
 						</div>
 				{% endfor %}
